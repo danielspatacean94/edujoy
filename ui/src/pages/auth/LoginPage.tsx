@@ -26,12 +26,12 @@ export function LoginPage() {
       await login(email, password)
       navigate(from ?? '/', { replace: true })
     } catch {
-      setError('Invalid email or password. Please try again.')
+      setError('Adresa de e-mail sau parola este incorectă. Încearcă din nou.')
     }
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
+    <div className="login-page min-h-screen flex flex-col">
       <div className="h-1.5 bg-gradient-to-r from-brand-800 to-brand-500" />
 
       <div className="flex flex-1 items-center justify-center px-4 py-12">
@@ -39,14 +39,14 @@ export function LoginPage() {
           <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
             <div className="px-8 py-6 bg-brand-800">
               <p className="text-xs font-semibold uppercase tracking-widest text-accent-400 mb-1">
-                Management system
+                Pași mici. Viitor luminos.
               </p>
-              <h1 className="text-xl font-bold text-white">App Skeleton</h1>
-              <p className="text-sm text-slate-400 mt-0.5">Internal platform</p>
+              <h1 className="text-xl font-bold text-white">EduJoy</h1>
+              <p className="text-sm text-slate-400 mt-0.5">Un loc primitor pentru comunitatea grădiniței tale</p>
             </div>
 
             <div className="px-8 py-7">
-              <p className="text-sm font-semibold text-slate-700 mb-5">Sign in</p>
+              <p className="text-sm font-semibold text-slate-700 mb-5">Bine ai revenit!</p>
 
               {error && (
                 <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2.5">
@@ -57,7 +57,7 @@ export function LoginPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
-                    Email address
+                    Adresă de e-mail
                   </label>
                   <input
                     type="email"
@@ -71,7 +71,7 @@ export function LoginPage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
-                    Password
+                    Parolă
                   </label>
                   <PasswordInput
                     required
@@ -86,14 +86,14 @@ export function LoginPage() {
                   disabled={isLoading}
                   className="w-full text-white py-2.5 rounded text-sm font-semibold disabled:opacity-50 transition-colors mt-2 bg-brand-800 hover:bg-brand-700"
                 >
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? 'Se autentifică...' : 'Autentificare'}
                 </button>
               </form>
             </div>
           </div>
 
           <p className="text-center text-xs text-slate-400 mt-6">
-            © {new Date().getFullYear()} App Skeleton — internal use
+            © {new Date().getFullYear()} EduJoy — Pentru zile pline de descoperiri
           </p>
         </div>
       </div>

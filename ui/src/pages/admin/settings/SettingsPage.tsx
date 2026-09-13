@@ -28,7 +28,7 @@ export function SettingsPage() {
         throw new Error('not an object')
       }
     } catch {
-      setError('Invalid JSON — must be a valid JSON object.')
+      setError('Format JSON incorect. Introdu un obiect JSON valid.')
       return
     }
 
@@ -39,7 +39,7 @@ export function SettingsPage() {
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch {
-      setError('Save failed. Please try again.')
+      setError('Salvarea a eșuat. Încearcă din nou.')
     } finally {
       setSaving(false)
     }
@@ -56,13 +56,12 @@ export function SettingsPage() {
   return (
     <div className="max-w-2xl">
       <p className="text-base text-gray-500 mb-6">
-        Edit app-wide configuration. This is an open-ended JSON blob for now — give it real, typed
-        fields (and a proper form) once specific settings requirements are known.
+        Gestionează configurația generală a aplicației.
       </p>
 
       <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Settings (JSON)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Setări (JSON)</label>
           <textarea
             value={raw}
             onChange={(e) => setRaw(e.target.value)}
@@ -77,12 +76,12 @@ export function SettingsPage() {
         )}
 
         {saved && (
-          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">Settings saved.</p>
+          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">Setările au fost salvate.</p>
         )}
 
         <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
           <Save size={14} />
-          {saving ? 'Saving…' : 'Save'}
+          {saving ? 'Se salvează…' : 'Salvează'}
         </Button>
       </div>
     </div>

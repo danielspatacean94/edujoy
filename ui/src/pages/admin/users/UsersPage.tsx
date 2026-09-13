@@ -31,18 +31,18 @@ export function UsersPage() {
   const close = () => setDialog({ type: 'none' })
 
   const roleBadge = (u: AppUser) => (
-    <Badge label={u.role} variant={u.role === 'admin' ? 'purple' : 'default'} />
+    <Badge label={u.role === 'admin' ? 'Administrator' : 'Educator'} variant={u.role === 'admin' ? 'purple' : 'default'} />
   )
 
   const userActions = (u: AppUser, size: number) => u.role === 'admin' ? null : (
     <div className="flex items-center gap-1">
-      <button onClick={() => setDialog({ type: 'edit', user: u })} title="Edit" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+      <button onClick={() => setDialog({ type: 'edit', user: u })} title="Editează" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
         <Pencil size={size} />
       </button>
-      <button onClick={() => setDialog({ type: 'reset', user: u })} title="Reset password" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+      <button onClick={() => setDialog({ type: 'reset', user: u })} title="Resetează parola" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
         <KeyRound size={size} />
       </button>
-      <button onClick={() => setDialog({ type: 'delete', user: u })} title="Delete" className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+      <button onClick={() => setDialog({ type: 'delete', user: u })} title="Șterge" className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
         <Trash2 size={size} />
       </button>
     </div>
@@ -51,7 +51,7 @@ export function UsersPage() {
   const columns: Column<AppUser>[] = [
     {
       key: 'fullName',
-      header: 'Name',
+      header: 'Nume',
       render: (u) => u.fullName ?? <span className="text-gray-400">—</span>,
     },
     {
@@ -61,7 +61,7 @@ export function UsersPage() {
     },
     {
       key: 'role',
-      header: 'Role',
+      header: 'Rol',
       render: roleBadge,
     },
     {
@@ -77,10 +77,10 @@ export function UsersPage() {
     <>
       <div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-          <p className="text-base text-gray-500">Manage platform users.</p>
+          <p className="text-base text-gray-500">Gestionează utilizatorii aplicației.</p>
           <Button size="sm" className="flex items-center gap-2 self-start sm:self-auto" onClick={() => setDialog({ type: 'create' })}>
             <Plus size={15} />
-            New user
+            Utilizator nou
           </Button>
         </div>
 

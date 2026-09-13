@@ -63,7 +63,7 @@ export function NotificationBell() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="relative p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-        aria-label="Notifications"
+        aria-label="Notificări"
       >
         <Bell size={18} />
         {unreadCount > 0 && (
@@ -76,22 +76,22 @@ export function NotificationBell() {
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <span className="text-sm font-semibold text-gray-900">Notifications today</span>
+            <span className="text-sm font-semibold text-gray-900">Notificările de azi</span>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllRead()}
                 className="text-xs text-brand-600 hover:text-brand-800 font-medium transition-colors"
               >
-                Mark all read
+                Marchează toate ca citite
               </button>
             )}
           </div>
 
           <div className="max-h-80 overflow-y-auto">
             {isLoading ? (
-              <p className="px-4 py-6 text-center text-sm text-gray-400">Loading...</p>
+              <p className="px-4 py-6 text-center text-sm text-gray-400">Se încarcă...</p>
             ) : notifications.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-gray-400">No notifications</p>
+              <p className="px-4 py-6 text-center text-sm text-gray-400">Nu ai notificări</p>
             ) : (
               notifications.map((n) => (
                 <div
@@ -109,12 +109,12 @@ export function NotificationBell() {
                       )}
                     </div>
                     {n.message && <p className="text-xs text-gray-500 mt-0.5 truncate">{n.message}</p>}
-                    <p className="text-xs text-gray-400 mt-0.5">{new Date(n.createdAt).toLocaleString()}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{new Date(n.createdAt).toLocaleString('ro-RO')}</p>
                   </button>
                   <button
                     onClick={(e) => deleteNotification(n.id, e)}
                     className="shrink-0 self-start mt-2 mr-2 p-1 rounded text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
-                    aria-label="Delete notification"
+                    aria-label="Șterge notificarea"
                   >
                     <X size={13} />
                   </button>

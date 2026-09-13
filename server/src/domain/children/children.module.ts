@@ -4,8 +4,9 @@ import { Child } from './entities/child.entity';
 import { ChildrenService } from './children.service';
 import { ChildrenController } from './children.controller';
 import { KindergartensModule } from '../kindergartens/kindergartens.module';
+import { GroupsModule } from '../groups/groups.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Child]), KindergartensModule],
+  imports: [TypeOrmModule.forFeature([Child]), KindergartensModule, GroupsModule],
   providers: [ChildrenService], controllers: [ChildrenController], exports: [ChildrenService],
 })
 export class ChildrenModule {}

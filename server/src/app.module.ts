@@ -1,4 +1,5 @@
 import { KindergartensModule } from './domain/kindergartens/kindergartens.module';
+import { GroupsModule } from './domain/groups/groups.module';
 import { ChildrenModule } from './domain/children/children.module';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -45,6 +46,7 @@ import { BannersModule } from './domain/banners/banners.module';
     BannersModule,
     KindergartensModule,
     ChildrenModule,
+    GroupsModule,
     // ClientsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

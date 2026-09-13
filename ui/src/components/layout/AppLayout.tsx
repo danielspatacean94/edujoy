@@ -7,7 +7,7 @@ export function AppLayout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-[#faf9f6]">
       {mobileNavOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/50 md:hidden"
@@ -17,7 +17,7 @@ export function AppLayout() {
       <Sidebar mobileOpen={mobileNavOpen} onMobileClose={() => setMobileNavOpen(false)} />
       <div className="flex flex-col flex-1 min-w-0">
         <Header onMenuClick={() => setMobileNavOpen(true)} />
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-8">
           <Outlet />
         </main>
       </div>

@@ -5,9 +5,9 @@ import { MobileTable } from '@/components/ui/MobileTable'
 import { AuditLog, AuditLogFilters, HISTORY_LIMIT, useHistoryStore } from './useHistoryStore'
 
 const ACTION_LABEL: Record<AuditLog['action'], string> = {
-  INSERT: 'Created',
-  UPDATE: 'Updated',
-  SOFT_DELETE: 'Deleted',
+  INSERT: 'Creare',
+  UPDATE: 'Actualizare',
+  SOFT_DELETE: 'Ștergere',
 }
 
 const ACTION_CLASS: Record<AuditLog['action'], string> = {
@@ -19,14 +19,28 @@ const ACTION_CLASS: Record<AuditLog['action'], string> = {
 // Add a label here for every entity name that should read nicer than its raw
 // class name (e.g. once a `Client` entity exists, add `Client: 'Client'`).
 const ENTITY_TYPE_LABEL: Record<string, string> = {
-  User: 'User',
-  Settings: 'Settings',
+  User: 'Utilizator',
+  Settings: 'Setări',
+  Kindergarten: 'Grădiniță',
+  Child: 'Copil',
+  Group: 'Grupă',
+  Banner: 'Anunț',
+  Notification: 'Notificare',
+}
+
+const FIELD_LABEL: Record<string, string> = {
+  _id: 'Identificator', name: 'Nume', fullName: 'Nume complet', email: 'E-mail',
+  role: 'Rol', kindergartenId: 'Grădiniță', groupId: 'Grupă', location: 'Adresă', age: 'Vârstă',
+  passwordExpiresAt: 'Expirarea parolei', tokenVersion: 'Versiunea sesiunii',
+  global: 'Setări generale', message: 'Mesaj', title: 'Titlu', link: 'Legătură',
+  startDate: 'Data de început', endDate: 'Data de sfârșit', style: 'Stil',
+  userId: 'Utilizator', isRead: 'Citită',
 }
 
 const ACTIONS: AuditLog['action'][] = ['INSERT', 'UPDATE', 'SOFT_DELETE']
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleString(undefined, {
+  return new Date(iso).toLocaleString('ro-RO', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -36,8 +50,9 @@ function formatDate(iso: string) {
 }
 
 function serializeValue(val: unknown): string {
-  if (val === null || val === undefined) return 'null'
-  if (typeof val === 'string') return val
+  if (val === null || val === undefined) return 'Nespecificat'
+  if (typeof val === 'boolean') return val ? 'Da' : 'Nu'
+  if (typeof val === 'string') return ({ admin: 'Administrator', teacher: 'Educator', ANNOUNCEMENT: 'Anunț', CELEBRATION: 'Sărbătoare' } as Record<string, string>)[val] ?? val
   return JSON.stringify(val)
 }
 
@@ -64,9 +79,9 @@ function DiffTable({ before, after }: {
       <table className="w-full text-xs font-mono border-collapse">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
-            <th className="text-left px-3 py-2 text-gray-500 font-semibold whitespace-nowrap w-px">Field</th>
-            <th className="text-left px-3 py-2 text-gray-500 font-semibold w-1/2">Before</th>
-            <th className="text-left px-3 py-2 text-gray-500 font-semibold w-1/2">After</th>
+            <th className="text-left px-3 py-2 text-gray-500 font-semibold whitespace-nowrap w-px">Câmp</th>
+            <th className="text-left px-3 py-2 text-gray-500 font-semibold w-1/2">Înainte</th>
+            <th className="text-left px-3 py-2 text-gray-500 font-semibold w-1/2">După</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -77,7 +92,7 @@ function DiffTable({ before, after }: {
             return (
               <tr key={key} className={isChanged ? 'bg-white' : 'opacity-35'}>
                 <td className={`px-3 py-1.5 align-top whitespace-nowrap ${isChanged ? 'text-gray-800 font-bold' : 'text-gray-400'}`}>
-                  {key}
+                  {FIELD_LABEL[key] ?? key}
                 </td>
                 <td className={`px-3 py-1.5 align-top break-all ${isChanged ? 'text-red-700 bg-red-50' : 'text-gray-400'}`}>
                   {beforeStr}
@@ -104,7 +119,7 @@ function EntityTable({ data, valueClass }: {
         <tbody className="divide-y divide-gray-100">
           {Object.entries(data ?? {}).map(([key, val]) => (
             <tr key={key}>
-              <td className="px-3 py-1.5 text-gray-700 font-bold whitespace-nowrap w-px align-top">{key}</td>
+              <td className="px-3 py-1.5 text-gray-700 font-bold whitespace-nowrap w-px align-top">{FIELD_LABEL[key] ?? key}</td>
               <td className={`px-3 py-1.5 align-top break-all ${valueClass}`}>{serializeValue(val)}</td>
             </tr>
           ))}
@@ -126,7 +141,7 @@ function DetailModal({ log, onClose }: { log: AuditLog; onClose: () => void }) {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
           <div>
-            <h2 className="font-semibold text-gray-900">Change details</h2>
+            <h2 className="font-semibold text-gray-900">Detaliile modificării</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               {ENTITY_TYPE_LABEL[log.entityType] ?? log.entityType}
               {log.entityId && <> · <span className="font-mono">{log.entityId}</span></>}
@@ -179,7 +194,7 @@ export function HistoryPage() {
   const columns: Column<AuditLog>[] = [
     {
       key: 'createdAt',
-      header: 'Date / time',
+      header: 'Data și ora',
       className: 'whitespace-nowrap w-40',
       render: (log) => (
         <span className="text-xs text-gray-500 tabular-nums">{formatDate(log.createdAt)}</span>
@@ -187,7 +202,7 @@ export function HistoryPage() {
     },
     {
       key: 'user',
-      header: 'User',
+      header: 'Utilizator',
       render: (log) =>
         log.userFullName || log.userEmail
           ? (
@@ -200,7 +215,7 @@ export function HistoryPage() {
     },
     {
       key: 'action',
-      header: 'Action',
+      header: 'Acțiune',
       className: 'w-32',
       render: (log) => (
         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ACTION_CLASS[log.action]}`}>
@@ -210,7 +225,7 @@ export function HistoryPage() {
     },
     {
       key: 'entityType',
-      header: 'Entity',
+      header: 'Înregistrare',
       className: 'w-40',
       render: (log) => (
         <span className="text-sm text-gray-700">
@@ -235,7 +250,7 @@ export function HistoryPage() {
         <div className="flex justify-end">
           <button
             onClick={() => setDetail(log)}
-            title="Details"
+            title="Detalii"
             className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
             <Eye size={14} />
@@ -251,7 +266,7 @@ export function HistoryPage() {
     <>
       <div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-          <p className="text-base text-gray-500">All changes made across the platform.</p>
+          <p className="text-base text-gray-500">Toate modificările efectuate în aplicație.</p>
 
           <div className="flex items-center gap-2 flex-wrap">
             <select
@@ -259,19 +274,21 @@ export function HistoryPage() {
               onChange={(e) => handleFilterChange('action', e.target.value)}
               className="text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-700"
             >
-              <option value="">All actions</option>
+              <option value="">Toate acțiunile</option>
               {ACTIONS.map((a) => (
                 <option key={a} value={a}>{ACTION_LABEL[a]}</option>
               ))}
             </select>
 
-            <input
-              type="text"
+            <select
+              aria-label="Tipul înregistrării"
               value={filters.entityType ?? ''}
               onChange={(e) => handleFilterChange('entityType', e.target.value)}
-              placeholder="Entity type"
               className="text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-700 w-36"
-            />
+            >
+              <option value="">Toate tipurile</option>
+              {Object.entries(ENTITY_TYPE_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
           </div>
         </div>
 
@@ -328,7 +345,7 @@ export function HistoryPage() {
             renderActions={(log) => (
               <button
                 onClick={() => setDetail(log)}
-                title="Details"
+                title="Detalii"
                 className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <Eye size={15} />

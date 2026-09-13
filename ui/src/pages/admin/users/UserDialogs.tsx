@@ -19,7 +19,7 @@ function DialogActions({ onClose, submitting, label }: {
   return (
     <div className="flex justify-end gap-2 pt-1">
       <Button type="button" variant="secondary" size="sm" onClick={onClose}>
-        Cancel
+        Anulează
       </Button>
       <Button type="submit" size="sm" disabled={submitting}>
         {submitting ? `${label}…` : label}
@@ -47,18 +47,18 @@ export function CreateUserDialog({ onClose, onSubmit }: {
       await onSubmit(form)
       onClose()
     } catch {
-      setError('Failed to create user. Please try again.')
+      setError('Utilizatorul nu a putut fi creat. Încearcă din nou.')
       setSaving(false)
     }
   }
 
   return (
-    <Modal title="New user" onClose={onClose}>
+    <Modal title="Utilizator nou" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <FormError message={error} />}
 
         <Input
-          label="Full name"
+          label="Nume complet"
           type="text"
           required
           value={form.fullName}
@@ -76,7 +76,7 @@ export function CreateUserDialog({ onClose, onSubmit }: {
         />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Parolă</label>
           <PasswordInput
             required
             value={form.password}
@@ -86,18 +86,18 @@ export function CreateUserDialog({ onClose, onSubmit }: {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
           <select
             value={form.role}
             onChange={(e) => set('role', e.target.value as 'admin' | 'teacher')}
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <option value="teacher">Teacher</option>
-            <option value="admin">Admin</option>
+            <option value="teacher">Educator</option>
+            <option value="admin">Administrare</option>
           </select>
         </div>
 
-        <DialogActions onClose={onClose} submitting={saving} label="Create" />
+        <DialogActions onClose={onClose} submitting={saving} label="Creează" />
       </form>
     </Modal>
   )
@@ -123,18 +123,18 @@ export function EditUserDialog({ user, onClose, onSubmit }: {
       await onSubmit(form)
       onClose()
     } catch {
-      setError('Failed to update user. Please try again.')
+      setError('Utilizatorul nu a putut fi actualizat. Încearcă din nou.')
       setSaving(false)
     }
   }
 
   return (
-    <Modal title="Edit user" onClose={onClose}>
+    <Modal title="Editează utilizatorul" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <FormError message={error} />}
 
         <Input
-          label="Full name"
+          label="Nume complet"
           type="text"
           required
           value={form.fullName}
@@ -142,18 +142,18 @@ export function EditUserDialog({ user, onClose, onSubmit }: {
         />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
           <select
             value={form.role}
             onChange={(e) => set('role', e.target.value as 'admin' | 'teacher')}
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <option value="teacher">Teacher</option>
-            <option value="admin">Admin</option>
+            <option value="teacher">Educator</option>
+            <option value="admin">Administrare</option>
           </select>
         </div>
 
-        <DialogActions onClose={onClose} submitting={saving} label="Save" />
+        <DialogActions onClose={onClose} submitting={saving} label="Salvează" />
       </form>
     </Modal>
   )
@@ -174,24 +174,24 @@ export function DeleteUserDialog({ user, onClose, onConfirm }: {
       await onConfirm()
       onClose()
     } catch {
-      setError('Failed to delete user. Please try again.')
+      setError('Utilizatorul nu a putut fi șters. Încearcă din nou.')
       setDeleting(false)
     }
   }
 
   return (
-    <Modal title="Delete user" onClose={onClose}>
+    <Modal title="Șterge utilizatorul" onClose={onClose}>
       <div className="space-y-4">
         {error && <FormError message={error} />}
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete{' '}
+          Sigur vrei să ștergi{' '}
           <span className="font-medium text-gray-900">{user.email}</span>?
-          This action cannot be undone.
+          Această acțiune nu poate fi anulată.
         </p>
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={onClose}>Cancel</Button>
+          <Button variant="secondary" size="sm" onClick={onClose}>Anulează</Button>
           <Button variant="danger" size="sm" onClick={handleConfirm} disabled={deleting}>
-            {deleting ? 'Deleting…' : 'Delete'}
+            {deleting ? 'Se șterge…' : 'Șterge'}
           </Button>
         </div>
       </div>
@@ -216,7 +216,7 @@ export function ResetPasswordDialog({ user, onClose, onConfirm }: {
       const password = await onConfirm()
       setNewPassword(password)
     } catch {
-      setError('Failed to reset password. Please try again.')
+      setError('Parola nu a putut fi resetată. Încearcă din nou.')
     } finally {
       setLoading(false)
     }
@@ -230,35 +230,35 @@ export function ResetPasswordDialog({ user, onClose, onConfirm }: {
   }
 
   return (
-    <Modal title="Reset password" onClose={onClose}>
+    <Modal title="Resetează parola" onClose={onClose}>
       <div className="space-y-4">
         {error && <FormError message={error} />}
 
         {!newPassword ? (
           <>
             <p className="text-sm text-gray-600">
-              Reset the password for{' '}
+              Resetezi parola pentru{' '}
               <span className="font-medium text-gray-900">{user.email}</span>?
-              A new password will be generated automatically.
+              O parolă nouă va fi generată automat.
             </p>
             <div className="flex justify-end gap-2">
-              <Button variant="secondary" size="sm" onClick={onClose}>Cancel</Button>
+              <Button variant="secondary" size="sm" onClick={onClose}>Anulează</Button>
               <Button size="sm" onClick={handleReset} disabled={loading}>
-                {loading ? 'Resetting…' : 'Reset password'}
+                {loading ? 'Se resetează…' : 'Resetează parola'}
               </Button>
             </div>
           </>
         ) : (
           <>
-            <p className="text-sm text-gray-600">Password reset. Share it with the user:</p>
+            <p className="text-sm text-gray-600">Parola a fost resetată. Transmite-o utilizatorului:</p>
             <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
               <code className="flex-1 text-sm font-mono text-gray-900 select-all">{newPassword}</code>
               <button onClick={handleCopy} className="text-xs font-medium text-brand-700 hover:text-brand-800 shrink-0">
-                {copied ? 'Copied!' : 'Copy'}
+                {copied ? 'Copiat!' : 'Copiază'}
               </button>
             </div>
             <div className="flex justify-end">
-              <Button size="sm" onClick={onClose}>Done</Button>
+              <Button size="sm" onClick={onClose}>Gata</Button>
             </div>
           </>
         )}

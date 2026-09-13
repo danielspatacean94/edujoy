@@ -45,7 +45,7 @@ export function Table<T>({ columns, data, rowKey, pagination, onSearch, loading 
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search..."
+              placeholder="Caută..."
               className="pl-8 pr-3 py-1.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent w-52"
             />
           </div>
@@ -70,13 +70,13 @@ export function Table<T>({ columns, data, rowKey, pagination, onSearch, loading 
             {loading ? (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-8 text-center text-sm text-gray-400">
-                  Loading…
+                  Se încarcă…
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-8 text-center text-sm text-gray-400">
-                  No records found.
+                  Nu există înregistrări.
                 </td>
               </tr>
             ) : (
@@ -95,7 +95,7 @@ export function Table<T>({ columns, data, rowKey, pagination, onSearch, loading 
 
         {pagination && (
           <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-100">
-            <span className="text-xs text-gray-400">{pagination.total} records</span>
+            <span className="text-xs text-gray-400">{pagination.total} înregistrări</span>
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => pagination.onPageChange(pagination.page - 1)}

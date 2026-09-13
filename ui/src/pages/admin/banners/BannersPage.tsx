@@ -11,8 +11,8 @@ import type { BannerStyle } from '@shared/types/banner'
 import { useBannersStore } from './useBannersStore'
 
 const BANNER_STYLE_BADGE: Record<BannerStyle, { label: string; variant: 'default' | 'purple' }> = {
-  ANNOUNCEMENT: { label: 'Announcement', variant: 'default' },
-  CELEBRATION: { label: 'Celebration 🎉', variant: 'purple' },
+  ANNOUNCEMENT: { label: 'Anunț', variant: 'default' },
+  CELEBRATION: { label: 'Sărbătoare 🎉', variant: 'purple' },
 }
 
 type DialogState =
@@ -22,7 +22,7 @@ type DialogState =
   | { type: 'delete'; banner: AppBanner }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString()
+  return new Date(iso).toLocaleDateString('ro-RO')
 }
 
 function isActiveNow(banner: AppBanner): boolean {
@@ -46,10 +46,10 @@ export function BannersPage() {
 
   const bannerActions = (b: AppBanner, size: number) => (
     <div className="flex items-center gap-1">
-      <button onClick={() => setDialog({ type: 'edit', banner: b })} title="Edit" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+      <button onClick={() => setDialog({ type: 'edit', banner: b })} title="Editează" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
         <Pencil size={size} />
       </button>
-      <button onClick={() => setDialog({ type: 'delete', banner: b })} title="Delete" className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+      <button onClick={() => setDialog({ type: 'delete', banner: b })} title="Șterge" className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
         <Trash2 size={size} />
       </button>
     </div>
@@ -58,25 +58,25 @@ export function BannersPage() {
   const columns: Column<AppBanner>[] = [
     {
       key: 'message',
-      header: 'Message',
+      header: 'Mesaj',
       className: 'max-w-[320px] truncate',
       render: (b) => b.message,
     },
     {
       key: 'period',
-      header: 'Period',
+      header: 'Perioadă',
       className: 'whitespace-nowrap',
       render: (b) => `${formatDate(b.startDate)} – ${formatDate(b.endDate)}`,
     },
     {
       key: 'style',
-      header: 'Style',
+      header: 'Stil',
       render: (b) => <Badge label={BANNER_STYLE_BADGE[b.style].label} variant={BANNER_STYLE_BADGE[b.style].variant} />,
     },
     {
       key: 'active',
-      header: 'Status',
-      render: (b) => isActiveNow(b) ? <Badge label="Active" variant="green" /> : <Badge label="Inactive" variant="default" />,
+      header: 'Stare',
+      render: (b) => isActiveNow(b) ? <Badge label="Activ" variant="green" /> : <Badge label="Inactiv" variant="default" />,
     },
     {
       key: 'actions',
@@ -91,10 +91,10 @@ export function BannersPage() {
     <>
       <div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-          <p className="text-base text-gray-500">Manage the banners shown in the header.</p>
+          <p className="text-base text-gray-500">Gestionează anunțurile afișate în partea de sus a paginii.</p>
           <Button size="sm" className="flex items-center gap-2 self-start sm:self-auto" onClick={() => setDialog({ type: 'create' })}>
             <Plus size={15} />
-            New banner
+            Anunț nou
           </Button>
         </div>
 
@@ -120,7 +120,7 @@ export function BannersPage() {
             renderContent={(b) => (
               <>
                 <div className="flex items-center gap-2 flex-wrap">
-                  {isActiveNow(b) ? <Badge label="Active" variant="green" /> : <Badge label="Inactive" variant="default" />}
+                  {isActiveNow(b) ? <Badge label="Activ" variant="green" /> : <Badge label="Inactiv" variant="default" />}
                   <Badge label={BANNER_STYLE_BADGE[b.style].label} variant={BANNER_STYLE_BADGE[b.style].variant} />
                   <span className="text-xs text-gray-500">{formatDate(b.startDate)} – {formatDate(b.endDate)}</span>
                 </div>

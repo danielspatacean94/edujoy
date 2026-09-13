@@ -31,7 +31,7 @@ export function MobileTable<T>({ data, rowKey, renderContent, renderActions, get
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search..."
+              placeholder="Caută..."
               className="pl-8 pr-3 py-1.5 text-sm border border-slate-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent w-52"
             />
           </div>
@@ -39,7 +39,7 @@ export function MobileTable<T>({ data, rowKey, renderContent, renderActions, get
       )}
 
       {filtered.length === 0 ? (
-        <p className="py-8 text-center text-sm text-gray-400">No records found.</p>
+        <p className="py-8 text-center text-sm text-gray-400">Nu există înregistrări.</p>
       ) : (
         <div className="space-y-2">
           {filtered.map((row, idx) => (
@@ -55,7 +55,7 @@ export function MobileTable<T>({ data, rowKey, renderContent, renderActions, get
 
       {pagination && (
         <div className="flex items-center justify-between px-1 py-1">
-          <span className="text-xs text-gray-400">{pagination.total} records</span>
+          <span className="text-xs text-gray-400">{pagination.total} înregistrări</span>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => pagination.onPageChange(pagination.page - 1)}

@@ -65,7 +65,7 @@ export class BannersService {
     const banner = await this.bannerRepo.findOne({
       where: { _id: new ObjectId(id), deletedAt: null } as any,
     });
-    if (!banner) throw new NotFoundException('Banner not found');
+    if (!banner) throw new NotFoundException('Anunțul nu a fost găsit.');
 
     if (dto.message !== undefined) banner.message = dto.message;
     if (dto.startDate !== undefined) banner.startDate = new Date(dto.startDate);
@@ -82,14 +82,14 @@ export class BannersService {
     const banner = await this.bannerRepo.findOne({
       where: { _id: new ObjectId(id), deletedAt: null } as any,
     });
-    if (!banner) throw new NotFoundException('Banner not found');
+    if (!banner) throw new NotFoundException('Anunțul nu a fost găsit.');
     banner.deletedAt = new Date();
     await this.bannerRepo.save(banner);
   }
 
   private validateDateRange(startDate: Date, endDate: Date): void {
     if (startDate > endDate) {
-      throw new BadRequestException('startDate must be before endDate');
+      throw new BadRequestException('Data de început trebuie să fie înaintea datei de sfârșit.');
     }
   }
 

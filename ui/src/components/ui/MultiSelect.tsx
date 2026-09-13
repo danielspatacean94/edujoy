@@ -16,7 +16,7 @@ export function MultiSelect<T>({
   getKey,
   getLabel,
   onChange,
-  placeholder = 'Select…',
+  placeholder = 'Alege…',
 }: Props<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -92,14 +92,14 @@ export function MultiSelect<T>({
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search…"
+                placeholder="Caută…"
                 className="w-full pl-7 pr-3 py-1.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
           <ul className="max-h-48 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-gray-400">No results.</li>
+              <li className="px-3 py-2 text-sm text-gray-400">Nu am găsit rezultate.</li>
             ) : (
               filtered.map((item) => {
                 const key = getKey(item)

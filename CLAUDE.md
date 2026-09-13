@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Project Overview
 
-app-skeleton — base NestJS + React application skeleton with authentication and user management. Extracted from the `topcad` house stack as a starting point for new internal apps.
+EduJoy — kindergarten community management built from a NestJS + React skeleton. Admins manage kindergartens and teacher accounts; teachers manage children within their assigned kindergarten.
 
 Built as a TypeScript monorepo with a single root `package.json`. Frontend and backend dependencies are installed from the root. The React app is built as static assets and served by NestJS.
 
@@ -75,7 +75,9 @@ Each module: Entity → DTOs (Create/Update/Response) → Service → Controller
 
 | Module | Path | Description |
 |---|---|---|
-| `users` | `/api/users` | User CRUD, password management. `GET /` is open to any authenticated user; every mutating route (`GET /:id`, create, update, delete, reset-password) requires `@Roles('admin')` explicitly — see the RolesGuard note under Authorization |
+| `users` | `/api/users` | Admin-only teacher account CRUD and password resets. The paginated list returns teachers. Teacher accounts require a name, email, temporary password (8+ characters), and an active `kindergartenId`; first login requires a password change. |
+| `kindergartens` | `/api/kindergartens` | Admin CRUD: name and location. Cannot delete while active teachers or children reference the kindergarten. |
+| `children` | `/api/children` | Name and integer age (0–18), attached to a kindergarten. Admins manage all children; teacher list/read/create/update/delete operations are scoped to their current kindergarten from the database-backed authenticated user. |
 | `notifications` | `/api/notifications` | Generic per-user notifications (`title`, `message`, `link`, `isRead`). `GET /today` (default view shown by the header bell) and `markAllRead` are both scoped to the current calendar day; `GET /` returns the general recent list (`?limit=`). Every route is scoped to `@CurrentUser()` — there's no admin override, since these are personal, not shared platform data. `NotificationsService.create()` is exported for other services to call as they're built; there is **no** public HTTP endpoint to create one — notifications are always created server-side by domain code, never directly by a client |
 | `banners` | `/api/banners` | Admin-managed announcements shown in `Header` (`/admin/banners`). `message`, `startDate`/`endDate`, `style: 'ANNOUNCEMENT'\|'CELEBRATION'` (`shared/types/banner.ts`'s `BannerStyle`/`BANNER_STYLES`, validated server-side with `@IsIn(BANNER_STYLES)` — purely presentational, picks which of `Header.tsx`'s `AnnouncementBar`/`CelebrationBar` renders it). `GET /` (paginated list) and all mutations (`POST`/`PUT /:id`/`DELETE /:id`) require `@Roles('admin')`; `BannersService` 400s if `startDate` is after `endDate`. `GET /active` is the one route with no `@Roles()` — open to any authenticated role, matching the RolesGuard convention — and returns banners where `now` falls within `[startDate, endDate]`; unlike itp-manager (the house-stack app this skeleton mirrors), there's no per-station/tenant targeting here since this skeleton has no such concept — every active banner is shown to every authenticated user |
 
@@ -100,25 +102,25 @@ Stack: React 18 · Vite 5 · Ant Design 5 · React Router 6 · Zustand 5 · Tail
 
 ### UI component kit (`ui/src/components/ui/`)
 
-A small set of Tailwind-styled primitives used instead of reaching for Ant Design's `Table`/`Modal`/`Form` on every page — `Table`/`MobileTable` (paginated list + search, rendered as a real `<table>` on desktop and a card list under `md:`), `Modal` (simple centered dialog), `Button`/`Input`/`PasswordInput`, `Badge`, `Spinner`, and `MultiSelect`/`SearchableSelect` for combobox-style pickers. `UsersPage`, `HistoryPage`, and `SettingsPage` all use this kit — follow the same pattern for new list/CRUD pages rather than mixing in raw Ant Design table/modal components. Ant Design itself is still available for genuinely complex stateful widgets (date pickers, cascaders) where a bespoke component isn't worth building.
+A small set of Tailwind-styled primitives used instead of reaching for Ant Design's `Table`/`Modal`/`Form` on every page — `Table`/`MobileTable` (paginated list + search, rendered as a real `<table>` on desktop and a card list under `md:`), `Modal` (simple centered dialog), `Button`/`Input`/`PasswordInput`, `Badge`, `Spinner`, and `MultiSelect`/`SearchableSelect` for combobox-style pickers. `HistoryPage` and `SettingsPage` use this kit; EduJoy’s `DirectoryPage` uses responsive cards plus the shared Button/Input/Modal primitives — follow the same pattern for new list/CRUD pages rather than mixing in raw Ant Design table/modal components. Ant Design itself is still available for genuinely complex stateful widgets (date pickers, cascaders) where a bespoke component isn't worth building.
 
 ### Routing
 
 - Public: `/login`, `/no-access`, `/change-password`
-- Protected (all roles): dashboard
-- Admin only: `/admin/users`, `/admin/history`, `/admin/settings`, `/admin/banners`
+- Protected (all roles): dashboard, `/children`
+- Admin only: `/admin/kindergartens`, `/admin/teachers`, `/admin/history`, `/admin/settings`, `/admin/banners` (`/admin/users` redirects to teachers)
 
 ### Rendering chain
 
 `main.tsx` mounts `App.tsx`, which runs one bootstrap effect (best-effort session refresh, gated behind `isAuthenticated`, wrapped in try/catch so a 401 can't hang the screen) behind a `ready` flag, then renders `AppRouter`. `AppRouter` nests every authenticated route under one `<Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>` so the sidebar/header shell isn't repeated per page; `ProtectedRoute` handles the `isAuthenticated`/`role`/password-expiry redirects. `AppLayout` composes `Sidebar` + `Header` + an `<Outlet />`, and owns the one piece of state (`mobileNavOpen`) that turns the sidebar into a slide-over drawer on small screens. Every top-level page needs a nav entry in `Sidebar.tsx`'s `mainNav`/`adminNav` *and* a matching `<Route>` in `AppRouter.tsx` — keep the two in lockstep as pages are added.
 
-`Sidebar` also fetches `GET /api/settings` once on mount and renders `v{version}` plus a `dev`/`prod` badge directly under the brand title (hidden entirely when the sidebar is collapsed, same as the title text) — `version`/`appName` come from the server reading its own `package.json`, `nodeEnv` from `process.env.NODE_ENV`, both merged into the `SettingsController` response alongside the `global` field. This endpoint is open to any authenticated role (`JwtAuthGuard` only, no `@Roles()`), so the badge renders for operators too, not just admins.
+`Sidebar` also fetches `GET /api/settings` once on mount and renders `v{version}` plus a `dev`/`prod` badge directly under the brand title (hidden entirely when the sidebar is collapsed, same as the title text) — `version`/`appName` come from the server reading its own `package.json`, `nodeEnv` from `process.env.NODE_ENV`, both merged into the `SettingsController` response alongside the `global` field. This endpoint is open to any authenticated role (`JwtAuthGuard` only, no `@Roles()`), so the badge renders for teachers too, not just admins.
 
 `Header`'s right side is `NotificationBell` + `UserMenu`. `NotificationBell` fetches the current user's **today's** notifications (`GET /notifications/today`) on mount, shows an unread-count badge, and lets the user mark-as-read (individually or all at once, both scoped to today), delete, or click through to a notification's `link`. `UserMenu` is a single clickable button (full name, hidden below `sm:`, with the role underneath) that opens a small dropdown with "Change password" (a `Modal` reusing `PasswordInput`, calling `authService.changePassword`) and "Logout".
 
 `Header` also renders a `BannerStrip` below its fixed `h-14` breadcrumb row (inside the same component, wrapped in an outer `shrink-0` div so the breadcrumb row's own height/styling stays untouched). It reads `banner.store.ts`'s `activeBanners` (fetched via `GET /api/banners/active` on mount) and renders one full-width bar per active banner — `style` picks between the plain `AnnouncementBar` and the gradient/animated `CelebrationBar` (`banner-shimmer`, `tailwind.config.js`). There's no dismiss/persistence, and no cap on how many can stack, so admins are expected not to overlap banners carelessly.
 
-Tailwind drives layout/spacing and the custom `brand`/`accent` palette (`tailwind.config.js`); Ant Design supplies stateful components (tables, forms, modals). Both run with Tailwind's `preflight` enabled — don't disable it unless a specific collision actually appears.
+EduJoy uses sage, peach, lavender, and mint, rounded cards, a local system font stack, and CSS artwork (no external font/image dependency). Tailwind drives layout/spacing and the custom `brand`/`accent` palette (`tailwind.config.js`); Ant Design supplies stateful components (tables, forms, modals). Both run with Tailwind's `preflight` enabled — don't disable it unless a specific collision actually appears.
 
 **Tailwind/PostCSS gotcha:** `ui/tailwind.config.js`'s `content` globs and `ui/postcss.config.js`'s `tailwindcss` plugin config both use absolute paths built from `__dirname`, not relative forms like `content: ['./index.html', ...]` or `tailwindcss: {}`. This isn't stylistic — Tailwind resolves `content` globs, and the `tailwindcss` PostCSS plugin resolves its own config file, relative to `process.cwd()` when given relative/no paths. The root `package.json` scripts run `vite build --config ui/vite.config.ts` **from the repo root**, so cwd is never `ui/` — relative forms silently match zero files, Tailwind emits only the preflight reset (with a "content option is missing or empty" warning), and every utility class vanishes from the build with no hard error. Don't "simplify" these two files back to relative paths.
 
@@ -136,8 +138,11 @@ Shared TypeScript types, DTOs, enums, and constants importable by both server an
 # Domain Entities
 
 ```ts
-User         { _id, email, fullName, password, role: 'admin'|'operator',
-               passwordExpiresAt, tokenVersion, deletedAt, timestamps }
+User         { _id, email, fullName, password, role: 'admin'|'teacher',
+               kindergartenId: string | null, passwordExpiresAt, tokenVersion, deletedAt, timestamps }
+
+Kindergarten { _id, name, location, deletedAt, timestamps }
+Child        { _id, name, age: integer (0–18), kindergartenId, deletedAt, timestamps }
 
 Notification { _id, userId, title, message, link, isRead, deletedAt, createdAt }
                // Generic, not tied to any domain entity yet — `link` is an
@@ -176,10 +181,10 @@ Banner       { _id, message, startDate: Date, endDate: Date,
 
 # Authorization
 
-Two roles: `admin` and `operator`.
+Two roles: `admin` and `teacher`.
 
 - **admin:** full access — manage users; access to all admin-only pages/routes
-- **operator:** everything else — the generic non-admin authenticated role
+- **teacher:** belongs to one active kindergarten; manages the shared child roster for that kindergarten. Kindergarten identity comes from the current database user on each request, never from a client-supplied claim. Reassignment immediately changes access; children stay with their kindergarten.
 
 JWT payload: `{ sub, email, role, tokenVersion }`. The `RolesGuard` enforces role on protected endpoints via the `@Roles()` decorator.
 
@@ -191,7 +196,9 @@ JWT payload: `{ sub, email, role, tokenVersion }`. The `RolesGuard` enforces rol
 
 ```
 /api/auth/*           login (rate-limited, 5/min), logout, me, change-password
-/api/users/*          GET / open to any authenticated user; all other routes admin only
+/api/users/*          admin-only teacher accounts and password resets
+/api/kindergartens/*   admin-only kindergarten CRUD
+/api/children/*        admin all-kindergarten CRUD; teachers scoped to assigned kindergarten
 /api/audit-logs/*      entity change history (admin only)
 /api/settings/*        GET requires auth (any role); PATCH admin only
 /api/notifications/*   GET /today (default) and GET / (recent) scoped to the current user; no admin override
@@ -236,7 +243,7 @@ Always throw NestJS HTTP exceptions: `NotFoundException`, `BadRequestException`,
 - Role-based authorization on all protected endpoints via `RolesGuard` + `@Roles()` — see the RolesGuard gotcha under Authorization; a guard with no `@Roles()` on the handler allows any authenticated user through
 - Rate limiting via `@nestjs/throttler`: global default (120 req/min) applied as an `APP_GUARD` in `app.module.ts`, with a stricter `@Throttle({ default: { ttl: 60_000, limit: 5 } })` override on `POST /api/auth/login` to slow down credential-stuffing/brute-force attempts
 - DTO validation with Class Validator on all incoming requests (global `ValidationPipe({ whitelist: true, transform: true })`)
-- Response DTOs are scoped to their audience: `UserResponseDto` (general list, readable by any authenticated user) omits `tokenVersion`/`passwordExpiresAt`; `MeResponseDto` (extends it, adds `passwordExpiresAt`) is used only for `GET /auth/me`
+- Response DTOs are scoped to their audience: `UserResponseDto` (admin-only teacher list) omits `tokenVersion`/`passwordExpiresAt`; `MeResponseDto` (extends it, adds `passwordExpiresAt`) is used only for `GET /auth/me`
 - Any free-text search parameter compiled into a MongoDB `$regex` filter must be escaped first (a local `escapeRegex()` helper) — unescaped user input in `$regex` is a ReDoS vector
 - Frontend must not call authenticated-only endpoints unconditionally on app bootstrap — gate the call behind `isAuthenticated`, and wrap best-effort calls in try/catch so a 401 on a protected route can't hang the login page (`App.tsx`'s init sequence follows this pattern)
 - AES-256-GCM encryption (`CryptoService`) for sensitive PII fields, with a separate deterministic-hash field for dedup lookups without decryption — apply this pattern (as topcad does for `Client.cnp`/`cnpHash`) to any future field that's both sensitive and needs to be searched/deduped
@@ -246,3 +253,16 @@ Always throw NestJS HTTP exceptions: `NotFoundException`, `BadRequestException`,
 
 **Known gaps (carried over as a starting point, revisit before production use):**
 - No tuned Content-Security-Policy (see the `helmet()` note above — the directive is off, not configured).
+
+## EduJoy implementation notes
+
+- The shared `DirectoryPage` (`ui/src/pages/people/`) implements kindergarten, teacher, and child CRUD with a separate Zustand store instance per mounted page, server search/pagination, mutation errors, and password reset dialogs. All requests live in `edujoy.service.ts`.
+- New resource PUT bodies contain the full editable record; teacher updates are partial. Child age is in whole years, 0–18.
+- Kindergarten deletes are blocked when active teachers or children remain; all deletes are soft deletes. Child operations fail closed for unassigned teachers. Deleted users cannot authenticate existing sessions.
+- Tests cover tenant isolation, forged assignments, deletion dependencies, teacher assignments, and deleted-user session lookup. Run `npm test -- --runInBand`, `npm run build`, and `node node_modules/typescript/bin/tsc --project ui/tsconfig.json`.
+- Existing skeleton `operator` records require an explicit data migration/administrator assignment before they can act as teachers; do not silently grant them access to children.
+
+## Application language
+
+EduJoy is Romanian-only. Write all user-facing labels, helper text, validation and error messages in Romanian with diacritics. Use ro-RO date/number formatting and Romanian Ant Design/Day.js locales. Keep code identifiers, API paths and stored enum values unchanged.
+

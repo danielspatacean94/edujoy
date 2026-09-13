@@ -14,11 +14,11 @@ module.exports = {
         // Brand palette referenced by Sidebar/Header (bg-brand-800, border-accent-400, etc).
         // Rename + retint for this app's own brand; keep the same shade-number steps.
         brand: {
-          900: '#091e3a',
-          800: '#0d2b4e',
-          700: '#163d6a',
-          600: '#1e5080',
-          500: '#2563a8',
+          900: '#244c48',
+          800: '#30675f',
+          700: '#3b7c70',
+          600: '#458a79',
+          500: '#529b87',
         },
         accent: {
           600: '#a87a10',

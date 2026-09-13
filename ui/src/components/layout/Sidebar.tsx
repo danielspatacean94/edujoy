@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, ChevronLeft, ChevronRight, Users, History, Settings, Megaphone } from 'lucide-react'
+import { School, Sprout, Sun, LayoutDashboard, ChevronLeft, ChevronRight, Users, History, Settings, Megaphone } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { settingsService, type AppSettings } from '@/services/settings.service'
 
 // One entry per top-level page. Add one row here for every page added to
 // AppRouter.tsx, using whichever lucide-react icon fits the domain.
 const mainNav = [
-  { label: 'Dashboard', path: '/', Icon: LayoutDashboard },
+  { label: 'Ziua mea', path: '/', Icon: LayoutDashboard },
+  { label: 'Grupe', path: '/groups', Icon: Users },
+  { label: 'Copii', path: '/children', Icon: Sprout },
   // { label: '<Domain>', path: '/<route>', Icon: SomeIcon },
 ]
 
 // Nav entries rendered below a divider, visible to admins only.
 const adminNav: typeof mainNav = [
-  { label: 'Users', path: '/admin/users', Icon: Users },
-  { label: 'History', path: '/admin/history', Icon: History },
-  { label: 'Settings', path: '/admin/settings', Icon: Settings },
-  { label: 'Banners', path: '/admin/banners', Icon: Megaphone },
+  { label: 'Grădinițe', path: '/admin/kindergartens', Icon: School },
+  { label: 'Educatori', path: '/admin/teachers', Icon: Users },
+  { label: 'Istoric', path: '/admin/history', Icon: History },
+  { label: 'Setări', path: '/admin/settings', Icon: Settings },
+  { label: 'Anunțuri', path: '/admin/banners', Icon: Megaphone },
 ]
 
 function NavItem({ label, path, Icon, collapsed, onClick }: {
@@ -52,7 +55,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar-collapsed') !== 'false')
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar-collapsed') === 'true')
   const user = useAuthStore((s) => s.user)
   const isAdmin = user?.role === 'admin'
   const effectiveCollapsed = collapsed && !mobileOpen
@@ -74,15 +77,16 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         bg-brand-800 text-white flex flex-col
         transition-transform duration-200 ease-in-out
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        ${effectiveCollapsed ? 'w-16' : 'w-52'}
+        ${effectiveCollapsed ? 'w-16' : 'w-60'}
       `}
     >
       {/* Logo / brand */}
-      <div className="flex items-center border-b border-brand-700 h-14 px-3 gap-2 shrink-0">
+      <div className="flex items-center border-b border-brand-700 h-20 px-3 gap-2 shrink-0">
+        <Sun size={27} className="text-accent-300 shrink-0" />
         {!effectiveCollapsed && (
           <div className="flex-1 min-w-0">
-            <span className="block text-sm font-bold tracking-wide text-white truncate">
-              App Skeleton
+            <span className="block text-2xl font-bold tracking-wide text-white truncate">
+              EduJoy
             </span>
             {appInfo && (
               <div className="flex items-center gap-1.5 mt-0.5">
@@ -102,7 +106,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             localStorage.setItem('sidebar-collapsed', String(next))
           }}
           className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-brand-700 transition-colors shrink-0 hidden md:flex"
-          aria-label={collapsed ? 'Expand' : 'Collapse'}
+          aria-label={collapsed ? 'Extinde meniul' : 'Restrânge meniul'}
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
@@ -120,7 +124,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             <div className={`pt-4 pb-2 ${effectiveCollapsed ? 'px-2' : 'px-4'}`}>
               {effectiveCollapsed
                 ? <div className="border-t border-brand-700" />
-                : <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Admin</p>
+                : <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Administrare</p>
               }
             </div>
             <div className="space-y-0.5 px-2">
@@ -131,6 +135,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           </>
         )}
       </nav>
+      {!effectiveCollapsed && <p className="text-xs text-white/70 px-5 pb-6">Pași mici. Viitor luminos.</p>}
     </aside>
   )
 }

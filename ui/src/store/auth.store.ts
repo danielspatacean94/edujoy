@@ -36,7 +36,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'app-skeleton-auth',
+      name: 'edujoy-auth',
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
     },
   ),

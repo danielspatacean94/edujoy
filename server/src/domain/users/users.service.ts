@@ -35,7 +35,7 @@ export class UsersService {
 
   async findAll(page = 1, limit = 20, search?: string): Promise<PaginatedResult<UserResponseDto>> {
     const skip = (page - 1) * limit;
-    const baseFilter = { deletedAt: null };
+    const baseFilter = { deletedAt: null, role: 'teacher' };
     const where = search
       ? {
           $and: [
@@ -61,7 +61,7 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { _id: objectId(id), deletedAt: null } as any,
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Utilizatorul nu a fost găsit.');
     return this.toDto(user);
   }
 
@@ -69,7 +69,7 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { _id: objectId(id), deletedAt: null } as any,
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Utilizatorul nu a fost găsit.');
     return { ...this.toDto(user), passwordExpiresAt: user.passwordExpiresAt ?? null };
   }
 
@@ -79,20 +79,20 @@ export class UsersService {
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     dto.email = dto.email.trim().toLowerCase();
-    if (!dto.fullName?.trim()) throw new BadRequestException('Name is required');
-    if (!dto.password) throw new BadRequestException('A temporary password is required');
+    if (!dto.fullName?.trim()) throw new BadRequestException('Numele este obligatoriu.');
+    if (!dto.password) throw new BadRequestException('Parola temporară este obligatorie.');
     if ((dto.role ?? 'teacher') === 'teacher') {
-      if (!dto.kindergartenId) throw new BadRequestException('Teachers need a kindergarten');
+      if (!dto.kindergartenId) throw new BadRequestException('Educatorii trebuie să fie atribuiți unei grădinițe.');
       await this.kindergartens.requireActive(dto.kindergartenId);
     }
     const existing = await this.findByEmail(dto.email);
-    if (existing) throw new ConflictException('Email already in use');
+    if (existing) throw new ConflictException('Adresa de e-mail este deja folosită.');
 
     const hashed = dto.password ? await bcrypt.hash(dto.password, 10) : null;
     const user = this.userRepo.create({
       kindergartenId: (dto.role ?? 'teacher') === 'teacher' ? dto.kindergartenId : null,
       email: dto.email,
-      fullName: dto.fullName ?? null,
+      fullName: dto.fullName.trim(),
       password: hashed,
       role: dto.role ?? 'teacher',
       passwordExpiresAt: new Date(),
@@ -105,13 +105,13 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { _id: objectId(id), deletedAt: null } as any,
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Utilizatorul nu a fost găsit.');
 
-    if (dto.fullName !== undefined && !dto.fullName.trim()) throw new BadRequestException('Name is required');
+    if (dto.fullName !== undefined && !dto.fullName.trim()) throw new BadRequestException('Numele este obligatoriu.');
     const role = dto.role ?? user.role;
     const kindergartenId = dto.kindergartenId ?? user.kindergartenId;
     if (role === 'teacher') {
-      if (!kindergartenId) throw new BadRequestException('Teachers need a kindergarten');
+      if (!kindergartenId) throw new BadRequestException('Educatorii trebuie să fie atribuiți unei grădinițe.');
       await this.kindergartens.requireActive(kindergartenId);
     }
     user.kindergartenId = role === 'teacher' ? kindergartenId : null;
@@ -126,7 +126,7 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { _id: objectId(id), deletedAt: null } as any,
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Utilizatorul nu a fost găsit.');
     user.deletedAt = new Date();
     await this.userRepo.save(user);
   }
@@ -139,14 +139,14 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { _id: new ObjectId(userId) } as any,
     });
-    if (!user) throw new NotFoundException('User not found');
-    if (!user.password) throw new BadRequestException('This account cannot use password login');
+    if (!user) throw new NotFoundException('Utilizatorul nu a fost găsit.');
+    if (!user.password) throw new BadRequestException('Acest cont nu permite autentificarea cu parolă.');
 
     const matches = await bcrypt.compare(dto.currentPassword, user.password);
-    if (!matches) throw new UnauthorizedException('Current password is incorrect');
+    if (!matches) throw new UnauthorizedException('Parola actuală este incorectă.');
 
     if (dto.currentPassword === dto.newPassword) {
-      throw new BadRequestException('New password cannot be the current password');
+      throw new BadRequestException('Parola nouă trebuie să fie diferită de cea actuală.');
     }
 
     user.password = await bcrypt.hash(dto.newPassword, 10);
@@ -160,7 +160,7 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { _id: objectId(id), deletedAt: null } as any,
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Utilizatorul nu a fost găsit.');
 
     const plain = this.generatePassword();
     user.password = await bcrypt.hash(plain, 10);
@@ -196,7 +196,7 @@ export class UsersService {
     });
     if (existing) return;
 
-    const adminEmail = this.configService.getOrThrow<string>('ADMIN_EMAIL');
+    const adminEmail = this.configService.getOrThrow<string>('ADMIN_EMAIL').trim().toLowerCase();
     const adminPassword =
       this.configService.getOrThrow<string>('ADMIN_PASSWORD');
     const adminName = this.configService.get<string>('ADMIN_NAME') ?? null;

@@ -17,7 +17,7 @@ export function SearchableSelect<T>({
   getKey,
   getLabel,
   onChange,
-  placeholder = 'Select…',
+  placeholder = 'Alege…',
   required,
 }: Props<T>) {
   const [open, setOpen] = useState(false)
@@ -82,7 +82,7 @@ export function SearchableSelect<T>({
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search…"
+                placeholder="Caută…"
                 className="w-full pl-7 pr-3 py-1.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
@@ -97,7 +97,7 @@ export function SearchableSelect<T>({
               </li>
             )}
             {filtered.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-gray-400">No results.</li>
+              <li className="px-3 py-2 text-sm text-gray-400">Nu am găsit rezultate.</li>
             ) : (
               filtered.map((item) => {
                 const key = getKey(item)

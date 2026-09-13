@@ -5,7 +5,7 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { NoAccessPage } from '@/pages/auth/NoAccessPage'
 import { ForceChangePasswordPage } from '@/pages/auth/ForceChangePasswordPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
-import { UsersPage } from '@/pages/admin/users/UsersPage'
+import { DirectoryPage } from '@/pages/people/DirectoryPage'
 import { HistoryPage } from '@/pages/admin/history/HistoryPage'
 import { SettingsPage } from '@/pages/admin/settings/SettingsPage'
 import { BannersPage } from '@/pages/admin/banners/BannersPage'
@@ -30,7 +30,11 @@ export function AppRouter() {
           {/* one <Route> per page, mirroring the nav entries in Sidebar.tsx, e.g.: */}
           {/* <Route path="/clients" element={<ClientsPage />} /> */}
 
-          <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
+          <Route path="/admin/users" element={<Navigate to="/admin/teachers" replace />} />
+          <Route path="/admin/kindergartens" element={<AdminRoute><DirectoryPage key="kindergartens" resource="kindergartens" /></AdminRoute>} />
+          <Route path="/admin/teachers" element={<AdminRoute><DirectoryPage key="teachers" resource="teachers" /></AdminRoute>} />
+          <Route path="/groups" element={<DirectoryPage key="groups" resource="groups" />} />
+          <Route path="/children" element={<DirectoryPage key="children" resource="children" />} />
           <Route path="/admin/history" element={<AdminRoute><HistoryPage /></AdminRoute>} />
           <Route path="/admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
           <Route path="/admin/banners" element={<AdminRoute><BannersPage /></AdminRoute>} />

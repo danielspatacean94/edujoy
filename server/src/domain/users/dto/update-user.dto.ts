@@ -10,7 +10,7 @@ export class UpdateUserDto {
   @IsMongoId()
   kindergartenId?: string;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsIn(['admin', 'teacher'])
   role?: 'admin' | 'teacher';
 }

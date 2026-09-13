@@ -19,11 +19,11 @@ export function ForceChangePasswordPage() {
     setError('')
 
     if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters.')
+      setError('Parola nouă trebuie să conțină cel puțin 8 caractere.')
       return
     }
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Parolele nu coincid.')
       return
     }
 
@@ -34,7 +34,7 @@ export function ForceChangePasswordPage() {
       navigate('/login')
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      setError(msg ?? 'Failed to change password.')
+      setError(msg ?? 'Parola nu a putut fi schimbată.')
     } finally {
       setSubmitting(false)
     }
@@ -52,16 +52,16 @@ export function ForceChangePasswordPage() {
           <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-3">
             <ShieldAlert size={24} className="text-amber-600" />
           </div>
-          <h1 className="text-lg font-semibold text-gray-900">Password expired</h1>
+          <h1 className="text-lg font-semibold text-gray-900">Parolă expirată</h1>
           <p className="text-sm text-gray-500 text-center mt-1">
-            Your password has expired. Please set a new one to continue.
+            Alege o parolă nouă pentru a continua. Parola actuală este temporară sau a expirat.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Current password <span className="text-red-500">*</span>
+              Parola actuală <span className="text-red-500">*</span>
             </label>
             <PasswordInput
               value={currentPassword}
@@ -72,7 +72,7 @@ export function ForceChangePasswordPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              New password <span className="text-red-500">*</span>
+              Parola nouă <span className="text-red-500">*</span>
             </label>
             <PasswordInput
               value={newPassword}
@@ -82,7 +82,7 @@ export function ForceChangePasswordPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm new password <span className="text-red-500">*</span>
+              Confirmă parola nouă <span className="text-red-500">*</span>
             </label>
             <PasswordInput
               value={confirmPassword}
@@ -100,7 +100,7 @@ export function ForceChangePasswordPage() {
             disabled={submitting}
             className="w-full mt-1 px-3 py-2 text-sm rounded-lg bg-brand-800 text-white font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
-            {submitting ? 'Saving...' : 'Change password'}
+            {submitting ? 'Se salvează...' : 'Schimbă parola'}
           </button>
         </form>
 
@@ -108,7 +108,7 @@ export function ForceChangePasswordPage() {
           onClick={handleLogout}
           className="w-full mt-3 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
-          Sign out
+          Deconectare
         </button>
       </div>
     </div>

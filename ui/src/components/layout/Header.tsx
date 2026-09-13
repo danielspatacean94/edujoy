@@ -15,15 +15,15 @@ import type { AppBanner } from '@/services/banners.service'
 // version just title-cases segments.
 function useBreadcrumbs(): { label: string; href?: string }[] {
   const { pathname } = useLocation()
-  const home = { label: 'Home', href: '/' }
-  if (pathname === '/') return [{ label: 'Home' }]
+  const home = { label: 'Acasă', href: '/' }
+  if (pathname === '/') return [{ label: 'Acasă' }]
 
   const segments = pathname.split('/').filter(Boolean)
   const crumbs: { label: string; href?: string }[] = [home]
   let acc = ''
   segments.forEach((seg, i) => {
     acc += `/${seg}`
-    const label = seg.charAt(0).toUpperCase() + seg.slice(1)
+    const label = ({ admin: 'Administrare', kindergartens: 'Grădinițe', teachers: 'Educatori', children: 'Copii', groups: 'Grupe', users: 'Utilizatori', history: 'Istoric', settings: 'Setări', banners: 'Anunțuri' } as Record<string, string>)[seg] ?? seg
     crumbs.push(i === segments.length - 1 ? { label } : { label, href: acc })
   })
   return crumbs
@@ -94,11 +94,11 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
     setError('')
 
     if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters.')
+      setError('Parola nouă trebuie să conțină cel puțin 8 caractere.')
       return
     }
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Parolele nu coincid.')
       return
     }
 
@@ -109,30 +109,30 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
       navigate('/login')
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      setError(msg ?? 'Failed to change password.')
+      setError(msg ?? 'Parola nu a putut fi schimbată.')
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Modal title="Change password" onClose={onClose}>
+    <Modal title="Schimbă parola" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Current password <span className="text-red-500">*</span>
+            Parola actuală <span className="text-red-500">*</span>
           </label>
           <PasswordInput value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoFocus />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            New password <span className="text-red-500">*</span>
+            Parola nouă <span className="text-red-500">*</span>
           </label>
           <PasswordInput value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Confirm new password <span className="text-red-500">*</span>
+            Confirmă parola nouă <span className="text-red-500">*</span>
           </label>
           <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
         </div>
@@ -142,8 +142,8 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
         )}
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="secondary" size="sm" onClick={onClose}>Cancel</Button>
-          <Button type="submit" size="sm" disabled={submitting}>{submitting ? 'Saving…' : 'Save'}</Button>
+          <Button type="button" variant="secondary" size="sm" onClick={onClose}>Anulează</Button>
+          <Button type="submit" size="sm" disabled={submitting}>{submitting ? 'Se salvează…' : 'Salvează'}</Button>
         </div>
       </form>
     </Modal>
@@ -192,14 +192,14 @@ function UserMenu() {
             className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <KeyRound size={15} className="text-gray-400" />
-            Change password
+            Schimbă parola
           </button>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-2.5 px-3.5 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut size={15} />
-            Logout
+            Deconectare
           </button>
         </div>
       )}
@@ -218,12 +218,12 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <div className="shrink-0">
-      <header className="h-14 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between px-4 md:px-6">
+      <header className="h-20 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={onMenuClick}
             className="p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors md:hidden shrink-0"
-            aria-label="Open menu"
+            aria-label="Deschide meniul"
           >
             <Menu size={20} />
           </button>

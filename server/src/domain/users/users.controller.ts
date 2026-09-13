@@ -24,8 +24,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Open to any authenticated user: the UI reads this list to populate
-  // "assigned to" style dropdowns, including for non-admin roles.
+  // Teacher directory is available only to administrators.
   @Get()
   @Roles('admin')
   findAll(@Query() query: PaginationQueryDto) {

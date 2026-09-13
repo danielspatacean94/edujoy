@@ -7,8 +7,8 @@ import type { AppBanner, CreateBannerDto, UpdateBannerDto } from '@/services/ban
 import { BANNER_STYLES, type BannerStyle } from '@shared/types/banner'
 
 const BANNER_STYLE_LABELS: Record<BannerStyle, string> = {
-  ANNOUNCEMENT: 'Simple announcement',
-  CELEBRATION: 'Celebration 🎉',
+  ANNOUNCEMENT: 'Anunț simplu',
+  CELEBRATION: 'Sărbătoare 🎉',
 }
 
 function DateInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -40,7 +40,7 @@ function DialogActions({ onClose, submitting, label }: {
   return (
     <div className="flex justify-end gap-2 pt-1">
       <Button type="button" variant="secondary" size="sm" onClick={onClose}>
-        Cancel
+        Anulează
       </Button>
       <Button type="submit" size="sm" disabled={submitting}>
         {submitting ? `${label}…` : label}
@@ -63,24 +63,24 @@ function BannerFields({ form, set }: {
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Mesaj</label>
         <textarea
           required
           value={form.message}
           onChange={(e) => set('message', e.target.value)}
           rows={4}
           className="w-full text-sm border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          placeholder="The message shown in the header"
+          placeholder="Mesajul afișat în partea de sus a paginii"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <DateInput label="Start date" value={form.startDate} onChange={(v) => set('startDate', v)} />
-        <DateInput label="End date" value={form.endDate} onChange={(v) => set('endDate', v)} />
+        <DateInput label="Data de început" value={form.startDate} onChange={(v) => set('startDate', v)} />
+        <DateInput label="Data de sfârșit" value={form.endDate} onChange={(v) => set('endDate', v)} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Style</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Stil</label>
         <select
           value={form.style}
           onChange={(e) => set('style', e.target.value as BannerStyle)}
@@ -115,7 +115,7 @@ export function CreateBannerDialog({ onClose, onSubmit }: {
     e.preventDefault()
     setError(null)
     if (!form.startDate || !form.endDate) {
-      setError('Select a start date and an end date.')
+      setError('Alege data de început și data de sfârșit.')
       return
     }
     setSaving(true)
@@ -123,17 +123,17 @@ export function CreateBannerDialog({ onClose, onSubmit }: {
       await onSubmit(form)
       onClose()
     } catch {
-      setError('Failed to create banner. Please try again.')
+      setError('Anunțul nu a putut fi creat. Încearcă din nou.')
       setSaving(false)
     }
   }
 
   return (
-    <Modal title="New banner" onClose={onClose}>
+    <Modal title="Anunț nou" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <FormError message={error} />}
         <BannerFields form={form} set={set} />
-        <DialogActions onClose={onClose} submitting={saving} label="Create" />
+        <DialogActions onClose={onClose} submitting={saving} label="Creează" />
       </form>
     </Modal>
   )
@@ -164,17 +164,17 @@ export function EditBannerDialog({ banner, onClose, onSubmit }: {
       await onSubmit(form)
       onClose()
     } catch {
-      setError('Failed to update banner. Please try again.')
+      setError('Anunțul nu a putut fi actualizat. Încearcă din nou.')
       setSaving(false)
     }
   }
 
   return (
-    <Modal title="Edit banner" onClose={onClose}>
+    <Modal title="Editează anunțul" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <FormError message={error} />}
         <BannerFields form={form} set={set} />
-        <DialogActions onClose={onClose} submitting={saving} label="Save" />
+        <DialogActions onClose={onClose} submitting={saving} label="Salvează" />
       </form>
     </Modal>
   )
@@ -195,24 +195,24 @@ export function DeleteBannerDialog({ banner, onClose, onConfirm }: {
       await onConfirm()
       onClose()
     } catch {
-      setError('Failed to delete banner. Please try again.')
+      setError('Anunțul nu a putut fi șters. Încearcă din nou.')
       setDeleting(false)
     }
   }
 
   return (
-    <Modal title="Delete banner" onClose={onClose}>
+    <Modal title="Șterge anunțul" onClose={onClose}>
       <div className="space-y-4">
         {error && <FormError message={error} />}
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete the banner{' '}
+          Sigur vrei să ștergi anunțul{' '}
           <span className="font-medium text-gray-900">"{banner.message}"</span>?
-          This action cannot be undone.
+          Această acțiune nu poate fi anulată.
         </p>
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={onClose}>Cancel</Button>
+          <Button variant="secondary" size="sm" onClick={onClose}>Anulează</Button>
           <Button variant="danger" size="sm" onClick={handleConfirm} disabled={deleting}>
-            {deleting ? 'Deleting…' : 'Delete'}
+            {deleting ? 'Se șterge…' : 'Șterge'}
           </Button>
         </div>
       </div>

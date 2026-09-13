@@ -18,7 +18,7 @@ export class CreateUserDto {
   @MinLength(8)
   password?: string;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsIn(['admin', 'teacher'])
   role?: 'admin' | 'teacher';
 }

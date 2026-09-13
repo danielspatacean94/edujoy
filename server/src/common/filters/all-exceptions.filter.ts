@@ -25,7 +25,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.getResponse()
-        : 'Internal server error';
+        : 'A apărut o eroare internă. Încearcă din nou mai târziu.';
 
     const stack = exception instanceof Error ? exception.stack : undefined;
 
@@ -35,10 +35,21 @@ export class AllExceptionsFilter implements ExceptionFilter {
       `${req.method} ${req.url}`,
     );
 
-    res.status(status).json(
-      typeof message === 'object'
-        ? message
-        : { statusCode: status, message },
-    );
+    const defaultMessages: Record<number, string> = {
+      400: 'Cererea este invalidă.',
+      401: 'Autentifică-te pentru a continua.',
+      403: 'Nu ai permisiunea de a efectua această acțiune.',
+      404: 'Resursa solicitată nu a fost găsită.',
+      429: 'Prea multe cereri. Încearcă din nou peste un minut.',
+    };
+    const payload = typeof message === 'object' && message !== null
+      ? { ...message } as Record<string, unknown>
+      : { statusCode: status, message };
+    if (typeof payload.message === 'string' &&
+        (/^(Unauthorized|Forbidden resource|Forbidden|Not Found|Bad Request|ThrottlerException|Cannot (GET|POST|PUT|PATCH|DELETE))/.test(payload.message))) {
+      payload.message = defaultMessages[status] ?? 'Cererea nu a putut fi procesată.';
+    }
+    if (typeof payload.error === 'string') payload.error = defaultMessages[status] ?? 'Eroare';
+    res.status(status).json(payload);
   }
 }

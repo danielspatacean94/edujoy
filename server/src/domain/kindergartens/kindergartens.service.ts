@@ -1,3 +1,4 @@
+import { Group } from '../groups/entities/group.entity';
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -8,7 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { SaveKindergartenDto, KindergartenResponseDto } from './dto/kindergarten.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 export function objectId(id: string): ObjectId {
-  if (!/^[a-f0-9]{24}$/i.test(id)) throw new BadRequestException('Invalid record ID');
+  if (!/^[a-f0-9]{24}$/i.test(id)) throw new BadRequestException('Identificatorul înregistrării este invalid.');
   return new ObjectId(id);
 }
 export function searchFilter(search?: string) {
@@ -18,14 +19,15 @@ export function searchFilter(search?: string) {
 export class KindergartensService {
   constructor(@InjectRepository(Kindergarten) private readonly repo: MongoRepository<Kindergarten>,
     @InjectRepository(User) private readonly users: MongoRepository<User>,
-    @InjectRepository(Child) private readonly children: MongoRepository<Child>) {}
+    @InjectRepository(Child) private readonly children: MongoRepository<Child>,
+    @InjectRepository(Group) private readonly groups: MongoRepository<Group>) {}
   async findAll({ page = 1, limit = 20, search }: PaginationQueryDto) {
     const [rows, total] = await this.repo.findAndCount({ where: { deletedAt: null, ...searchFilter(search) }, skip: (page - 1) * limit, take: limit, order: { name: 'ASC' } });
     return { data: rows.map(row => this.toDto(row)), total, page, limit, totalPages: Math.ceil(total / limit) };
   }
   async requireActive(id: string) {
     const row = await this.repo.findOne({ where: { _id: objectId(id), deletedAt: null } });
-    if (!row) throw new NotFoundException('Kindergarten not found');
+    if (!row) throw new NotFoundException('Grădinița nu a fost găsită.');
     return row;
   }
   async findOne(id: string) { return this.toDto(await this.requireActive(id)); }
@@ -37,11 +39,12 @@ export class KindergartensService {
   }
   async remove(id: string) {
     const row = await this.requireActive(id);
-    const [teachers, children] = await Promise.all([
+    const [teachers, children, groups] = await Promise.all([
       this.users.count({ where: { kindergartenId: id, deletedAt: null } }),
       this.children.count({ where: { kindergartenId: id, deletedAt: null } }),
+      this.groups.count({ where: { kindergartenId: id, deletedAt: null } }),
     ]);
-    if (teachers || children) throw new ConflictException('Move or delete the teachers and children before deleting this kindergarten.');
+    if (teachers || children || groups) throw new ConflictException('Mută sau șterge grupele, educatorii și copiii înainte de a șterge această grădiniță.');
     row.deletedAt = new Date(); await this.repo.save(row);
   }
   toDto(row: Kindergarten): KindergartenResponseDto {

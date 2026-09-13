@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
+import { validationMessages } from './common/dto/validation-messages';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
@@ -9,7 +10,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(new Logger());
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    exceptionFactory: errors => new BadRequestException(validationMessages(errors)),
+  }));
   app.use(
     helmet({
       // Ant Design injects <style> tags at runtime (CSS-in-JS) and the SPA

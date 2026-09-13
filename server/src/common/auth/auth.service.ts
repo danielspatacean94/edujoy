@@ -16,11 +16,11 @@ export class AuthService {
   async login(dto: LoginDto) {
     this.logger.log(`Login user ${dto.email}`, this.constructor.name);
     const user = await this.usersService.findByEmail(dto.email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) throw new UnauthorizedException('Adresa de e-mail sau parola este incorectă.');
 
-    if (!user.password) throw new UnauthorizedException('Invalid credentials');
+    if (!user.password) throw new UnauthorizedException('Adresa de e-mail sau parola este incorectă.');
     const valid = await bcrypt.compare(dto.password, user.password);
-    if (!valid) throw new UnauthorizedException('Invalid credentials');
+    if (!valid) throw new UnauthorizedException('Adresa de e-mail sau parola este incorectă.');
 
     const payload: JwtPayload = {
       sub: user._id.toString(),

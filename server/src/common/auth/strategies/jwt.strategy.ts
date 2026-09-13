@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) throw new UnauthorizedException();
 
     if (user.tokenVersion !== payload.tokenVersion) {
-      throw new UnauthorizedException('Session expired. Please sign in again.');
+      throw new UnauthorizedException('Sesiunea a expirat. Autentifică-te din nou.');
     }
 
     return {
