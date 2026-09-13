@@ -10,6 +10,8 @@ export class Child {
   @Column()
   kindergartenId: string;
   @Column({ nullable: true, default: null }) groupId: string | null = null;
+  @Column({ nullable: true, default: null }) photoKey: string | null = null;
+  @Column({ nullable: true, default: null }) photoMimeType: string | null = null;
   @Column({ nullable: true, default: null }) deletedAt: Date | null = null;
   @CreateDateColumn() createdAt: Date;
   @UpdateDateColumn() updatedAt: Date;

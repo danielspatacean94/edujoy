@@ -1,5 +1,6 @@
 import { KindergartensModule } from './domain/kindergartens/kindergartens.module';
 import { GroupsModule } from './domain/groups/groups.module';
+import { AttendanceModule } from './domain/attendance/attendance.module';
 import { ChildrenModule } from './domain/children/children.module';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -37,8 +38,7 @@ import { BannersModule } from './domain/banners/banners.module';
     LoggerModule,
     DatabaseModule,
     AuthModule,
-  //  CryptoModule,
- //   S3Module,
+    S3Module,
     AuditModule,
     SettingsModule,
     UsersModule,
@@ -47,6 +47,7 @@ import { BannersModule } from './domain/banners/banners.module';
     KindergartensModule,
     ChildrenModule,
     GroupsModule,
+    AttendanceModule,
     // ClientsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

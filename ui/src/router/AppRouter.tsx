@@ -9,6 +9,7 @@ import { DirectoryPage } from '@/pages/people/DirectoryPage'
 import { HistoryPage } from '@/pages/admin/history/HistoryPage'
 import { SettingsPage } from '@/pages/admin/settings/SettingsPage'
 import { BannersPage } from '@/pages/admin/banners/BannersPage'
+import { AttendancePage } from '@/pages/attendance/AttendancePage'
 // import each new page here as it's created, e.g.:
 // import { ClientsPage } from '@/pages/clients/ClientsPage'
 
@@ -23,6 +24,7 @@ export function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/no-access" element={<NoAccessPage />} />
         <Route path="/change-password" element={<ProtectedRoute><ForceChangePasswordPage /></ProtectedRoute>} />
+        <Route path="/attendance/:id" element={<ProtectedRoute><AttendancePage /></ProtectedRoute>} />
 
         <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
           <Route index element={<DashboardPage />} />
@@ -35,6 +37,7 @@ export function AppRouter() {
           <Route path="/admin/teachers" element={<AdminRoute><DirectoryPage key="teachers" resource="teachers" /></AdminRoute>} />
           <Route path="/groups" element={<DirectoryPage key="groups" resource="groups" />} />
           <Route path="/children" element={<DirectoryPage key="children" resource="children" />} />
+          <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/admin/history" element={<AdminRoute><HistoryPage /></AdminRoute>} />
           <Route path="/admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
           <Route path="/admin/banners" element={<AdminRoute><BannersPage /></AdminRoute>} />

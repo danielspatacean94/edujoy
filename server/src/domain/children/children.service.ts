@@ -7,9 +7,10 @@ import { GroupsService } from '../groups/groups.service';
 import { KindergartensService, objectId, searchFilter } from '../kindergartens/kindergartens.service';
 import { AuthenticatedUser } from '../../common/interfaces/jwt-payload.interface';
 import { PaginationQueryDto } from '../../common/dto/pagination.dto';
+import { S3Service } from '../../common/s3/s3.service';
 @Injectable()
 export class ChildrenService {
-  constructor(@InjectRepository(Child) private readonly repo: MongoRepository<Child>, private readonly kindergartens: KindergartensService, private readonly groups: GroupsService) {}
+  constructor(@InjectRepository(Child) private readonly repo: MongoRepository<Child>, private readonly kindergartens: KindergartensService, private readonly groups: GroupsService, private readonly s3: S3Service) {}
   async scope(user: AuthenticatedUser) {
     if (user.role === 'admin') return {};
     if (user.role !== 'teacher' || !user.kindergartenId) throw new ForbiddenException('Cere unui administrator să îți atribuie o grădiniță.');
@@ -63,7 +64,22 @@ export class ChildrenService {
   async remove(id: string, user: AuthenticatedUser) {
     const row = await this.requireChild(id, user); row.deletedAt = new Date(); await this.repo.save(row);
   }
+  async savePhoto(id: string, file: { buffer: Buffer; mimetype: string }, user: AuthenticatedUser) {
+    const row = await this.requireChild(id, user);
+    if (!file.mimetype.startsWith('image/')) throw new BadRequestException('Încarcă o imagine validă.');
+    const key = `children/${id}/photo.jpg`;
+    await this.s3.upload(key, file.buffer, file.mimetype);
+    if (row.photoKey && row.photoKey !== key) await this.s3.deleteObject(row.photoKey);
+    row.photoKey = key;
+    row.photoMimeType = file.mimetype;
+    return this.toDto(await this.repo.save(row));
+  }
+  async photo(id: string, user: AuthenticatedUser) {
+    const row = await this.requireChild(id, user);
+    if (!row.photoKey) throw new NotFoundException('Copilul nu are o fotografie.');
+    return { buffer: await this.s3.getObject(row.photoKey), mimetype: row.photoMimeType ?? 'image/jpeg' };
+  }
   toDto(row: Child): ChildResponseDto {
-    return { id: row._id.toString(), name: row.name, age: row.age, kindergartenId: row.kindergartenId, groupId: row.groupId ?? null, createdAt: row.createdAt, updatedAt: row.updatedAt };
+    return { id: row._id.toString(), name: row.name, age: row.age, kindergartenId: row.kindergartenId, groupId: row.groupId ?? null, photoKey: row.photoKey ?? null, createdAt: row.createdAt, updatedAt: row.updatedAt };
   }
 }

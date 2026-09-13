@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { School, Sprout, Sun, LayoutDashboard, ChevronLeft, ChevronRight, Users, History, Settings, Megaphone } from 'lucide-react'
+import { School, Sprout, Sun, LayoutDashboard, ChevronLeft, ChevronRight, Users, History, Settings, Megaphone, ClipboardCheck } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { settingsService, type AppSettings } from '@/services/settings.service'
 
@@ -10,6 +10,7 @@ const mainNav = [
   { label: 'Ziua mea', path: '/', Icon: LayoutDashboard },
   { label: 'Grupe', path: '/groups', Icon: Users },
   { label: 'Copii', path: '/children', Icon: Sprout },
+  { label: 'Prezență', path: '/attendance', Icon: ClipboardCheck },
   // { label: '<Domain>', path: '/<route>', Icon: SomeIcon },
 ]
 

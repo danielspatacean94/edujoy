@@ -15,6 +15,7 @@ export class ChildResponseDto {
   name: string;
   age: number; kindergartenId: string;
   groupId: string | null;
+  photoKey: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
