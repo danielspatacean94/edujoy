@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: edujoy
+    runtime: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CF_R2_BUCKET
+        sync: false
+      - key: CF_R2_ENDPOINT
+        sync: false
+      - key: CF_S3_ACCESS_KEY_ID
+        sync: false
+      - key: CF_S3_TOKEN_SECRET
+        sync: false
