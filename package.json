@@ -4,6 +4,7 @@
   "private": true,
   "description": "EduJoy kindergarten community management",
   "main": "dist/server/src/main.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run ui\"",
     "server": "nest start --watch",
