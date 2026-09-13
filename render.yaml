@@ -3,7 +3,7 @@ services:
     name: edujoy
     runtime: node
     buildCommand: npm ci && npm run build
-    startCommand: npm start
+    startCommand: node dist/server/src/main.js
     envVars:
       - key: NODE_ENV
         value: production

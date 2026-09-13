@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "EduJoy kindergarten community management",
-  "main": "server/src/main.ts",
+  "main": "dist/server/src/main.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run ui\"",
     "server": "nest start --watch",
