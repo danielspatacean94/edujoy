@@ -207,6 +207,7 @@ JWT payload: `{ sub, email, role, tokenVersion }`. The `RolesGuard` enforces rol
 /api/settings/*        GET requires auth (any role); PATCH admin only
 /api/notifications/*   GET /today (default) and GET / (recent) scoped to the current user; no admin override
 /api/banners/*          GET / + mutations admin only; GET /active open to any authenticated role (app-wide, no per-user scoping)
+/wheel                  Teacher-facing child selection wheel (groups and children are scoped by the existing services)
 ```
 
 Add a line here for every new domain module's routes.
@@ -260,7 +261,7 @@ Always throw NestJS HTTP exceptions: `NotFoundException`, `BadRequestException`,
 
 ## EduJoy implementation notes
 
-- `KindergartensPage`, `TeachersPage`, `GroupsPage`, and `ChildrenPage` own their domain cards and forms. Do not reintroduce a resource-switching page, form, or optional-field record type. Each domain has a typed service and a co-located store factory; `createCollectionStore` and `useCollection` share pagination, search, dialog state, and stale-request handling. `components/directory/` shares presentation only. Teacher password reset and child photo upload remain domain-specific.
+- `KindergartensPage`, `TeachersPage`, `GroupsPage`, and `ChildrenPage` own their domain cards and forms. `ChildrenWheelPage` owns the teacher-facing random child picker at `/wheel`; it loads groups and children through typed services and keeps wheel animation and speech local to the feature. Do not reintroduce a resource-switching page, form, or optional-field record type. Each domain has a typed service and a co-located store factory; `createCollectionStore` and `useCollection` share pagination, search, dialog state, and stale-request handling. `components/directory/` shares presentation only. Teacher password reset and child photo upload remain domain-specific.
 - Attendance presentation is split into `AttendanceBoard`, `AttendanceCard`, `AttendanceChildCard`, and `AttendanceChildPhoto`; audio lives in `attendance-audio.ts`. `useChildPhoto` owns photo loading and object-URL cleanup.
 - Run `npm run test:ui -- --runInBand` for UI store, service contract, and form regression tests (Jest + ts-jest; no extra dependencies).
 - New resource PUT bodies contain the full editable record; teacher updates are partial. Child age is in whole years, 0–18.

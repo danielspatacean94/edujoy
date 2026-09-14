@@ -23,7 +23,7 @@ function useBreadcrumbs(): { label: string; href?: string }[] {
   let acc = ''
   segments.forEach((seg, i) => {
     acc += `/${seg}`
-    const label = ({ admin: 'Administrare', kindergartens: 'Grădinițe', teachers: 'Educatori', children: 'Copii', groups: 'Grupe', users: 'Utilizatori', history: 'Istoric', settings: 'Setări', banners: 'Anunțuri', attendance: 'Prezență' } as Record<string, string>)[seg] ?? seg
+    const label = ({ admin: 'Administrare', kindergartens: 'Grădinițe', teachers: 'Educatori', children: 'Copii', groups: 'Grupe', users: 'Utilizatori', history: 'Istoric', settings: 'Setări', banners: 'Anunțuri', attendance: 'Prezență', wheel: 'Roata copiilor' } as Record<string, string>)[seg] ?? seg
     crumbs.push(i === segments.length - 1 ? { label } : { label, href: acc })
   })
   return crumbs

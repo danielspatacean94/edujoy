@@ -56,8 +56,8 @@ export function AttendanceBoard({
         </div>
         <div className="col-span-2 row-start-2 flex items-center justify-center gap-3 sm:col-span-1 sm:col-start-2 sm:row-start-1">
           <span className="text-2xl">☀</span>
-          <p className="font-semibold tracking-wide text-[#31566a]">
-            Împreună creștem frumos!
+          <p className="attendance-group-header-title">
+            {detail.groupName}
           </p>
           <span className="text-2xl text-rose-500">♥</span>
         </div>
@@ -74,10 +74,7 @@ export function AttendanceBoard({
           )}
         </div>
       </div>
-      <div className="attendance-board-info grid grid-cols-1 items-center gap-4 border-b-8 border-[#9a663c] bg-[#f1d39a] px-5 py-4 sm:px-7">
-        <div className="attendance-group-sign">
-          <h2>{detail.groupName}</h2>
-        </div>
+      <div className="attendance-board-info flex items-center justify-end gap-2 border-b-8 border-[#9a663c] bg-[#f1d39a] px-5 py-2 sm:px-7">
         <div className="flex flex-wrap items-center justify-end gap-2 empty:hidden">
           {onBack && finished && (
             <span className="font-semibold text-emerald-700">Finalizată</span>

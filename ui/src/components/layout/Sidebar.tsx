@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { School, Sprout, Sun, LayoutDashboard, ChevronLeft, ChevronRight, Users, History, Settings, Megaphone, ClipboardCheck } from 'lucide-react'
+import { School, Sprout, Sun, LayoutDashboard, ChevronLeft, ChevronRight, Users, History, Settings, Megaphone, ClipboardCheck, Dices } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { settingsService, type AppSettings } from '@/services/settings.service'
 
@@ -8,13 +8,17 @@ import { settingsService, type AppSettings } from '@/services/settings.service'
 // AppRouter.tsx, using whichever lucide-react icon fits the domain.
 const mainNav = [
   { label: 'Ziua mea', path: '/', Icon: LayoutDashboard },
-  { label: 'Grupe', path: '/groups', Icon: Users },
-  { label: 'Copii', path: '/children', Icon: Sprout },
   { label: 'Prezență', path: '/attendance', Icon: ClipboardCheck },
+  { label: 'Roata copiilor', path: '/wheel', Icon: Dices },
   // { label: '<Domain>', path: '/<route>', Icon: SomeIcon },
 ]
 
 // Nav entries rendered below a divider, visible to admins only.
+const managementNav: typeof mainNav = [
+  { label: 'Grupe', path: '/groups', Icon: Users },
+  { label: 'Copii', path: '/children', Icon: Sprout },
+]
+
 const adminNav: typeof mainNav = [
   { label: 'Grădinițe', path: '/admin/kindergartens', Icon: School },
   { label: 'Educatori', path: '/admin/teachers', Icon: Users },
@@ -120,7 +124,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           ))}
         </div>
 
-        {isAdmin && adminNav.length > 0 && (
+        {(managementNav.length > 0 || isAdmin) && (
           <>
             <div className={`pt-4 pb-2 ${effectiveCollapsed ? 'px-2' : 'px-4'}`}>
               {effectiveCollapsed
@@ -129,7 +133,10 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               }
             </div>
             <div className="space-y-0.5 px-2">
-              {adminNav.map(({ label, path, Icon }) => (
+              {managementNav.map(({ label, path, Icon }) => (
+                <NavItem key={path} label={label} path={path} Icon={Icon} collapsed={effectiveCollapsed} onClick={onMobileClose} />
+              ))}
+              {isAdmin && adminNav.map(({ label, path, Icon }) => (
                 <NavItem key={path} label={label} path={path} Icon={Icon} collapsed={effectiveCollapsed} onClick={onMobileClose} />
               ))}
             </div>

@@ -13,6 +13,7 @@ import { HistoryPage } from '@/pages/admin/history/HistoryPage'
 import { SettingsPage } from '@/pages/admin/settings/SettingsPage'
 import { BannersPage } from '@/pages/admin/banners/BannersPage'
 import { AttendancePage } from '@/pages/attendance/AttendancePage'
+import { ChildrenWheelPage } from '@/pages/wheel/ChildrenWheelPage'
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute role="admin">{children}</ProtectedRoute>
@@ -73,6 +74,7 @@ export function AppRouter() {
           <Route path="/groups" element={<GroupsPage />} />
           <Route path="/children" element={<ChildrenPage />} />
           <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/wheel" element={<ChildrenWheelPage />} />
           <Route
             path="/admin/history"
             element={

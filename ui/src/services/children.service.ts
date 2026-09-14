@@ -22,7 +22,7 @@ export interface ChildInput {
 }
 
 export const childrenService = {
-  async list(query: ListQuery) {
+  async list(query: ListQuery & { groupId?: string }) {
     return (
       await apiClient.get<PaginatedResult<Child>>('/children', {
         params: query,

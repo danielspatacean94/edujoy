@@ -54,6 +54,21 @@
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
 
+.attendance-group-header-title {
+  color: #245445;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.wheel-winner-pointer {
+  filter: drop-shadow(0 3px 2px rgba(15, 23, 42, 0.45));
+}
+
 .attendance-group-sign p:last-child {
   color: #52645e;
   font-size: 0.8rem;
@@ -311,3 +326,14 @@ aside nav a { border-radius: 12px; margin-bottom: 5px; }
 @media(max-width: 1100px) { .garden-art { opacity: .35; right: -100px; }.welcome-panel { padding: 32px; } }
 @media(max-width: 640px) { .garden-art { display: none; }.welcome-panel { padding: 26px; min-height: auto; }.page-intro { padding: 24px; }.page-intro h1 { font-size: 29px; } }
 @media(prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.dashboard-page .welcome-panel { min-height: 270px; padding: 34px 40px; }
+.dashboard-page .welcome-panel h1 { margin-bottom: 10px; }
+.dashboard-page .welcome-link { margin-top: 18px; }
+.dashboard-page > .flex.items-center { margin-top: 28px; margin-bottom: 14px; }
+.dashboard-page .dashboard-card { padding: 20px; }
+.dashboard-page .dashboard-card h2 { margin-top: 16px; }
+.dashboard-page .dashboard-card span { margin-top: 18px; }
+.dashboard-page > .mt-8 { margin-top: 20px; padding: 16px 20px; }
+
+@media(max-width: 640px) { .dashboard-page .welcome-panel { padding: 26px; min-height: 250px; } .dashboard-page > .flex.items-center { margin-top: 22px; } }
