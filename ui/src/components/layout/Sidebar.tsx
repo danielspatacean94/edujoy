@@ -18,9 +18,9 @@ const mainNav = [
 const adminNav: typeof mainNav = [
   { label: 'Grădinițe', path: '/admin/kindergartens', Icon: School },
   { label: 'Educatori', path: '/admin/teachers', Icon: Users },
-  { label: 'Istoric', path: '/admin/history', Icon: History },
-  { label: 'Setări', path: '/admin/settings', Icon: Settings },
   { label: 'Anunțuri', path: '/admin/banners', Icon: Megaphone },
+  { label: 'Setări', path: '/admin/settings', Icon: Settings },
+  { label: 'Istoric', path: '/admin/history', Icon: History },
 ]
 
 function NavItem({ label, path, Icon, collapsed, onClick }: {
