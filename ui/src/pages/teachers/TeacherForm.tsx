@@ -14,6 +14,7 @@ interface Props {
   onSaved: () => void
 }
 
+
 export function TeacherForm({
   teacher,
   kindergartens,
@@ -26,7 +27,30 @@ export function TeacherForm({
   )
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordCopied, setPasswordCopied] = useState(false)
   const { busy, error, run } = useMutation()
+
+  const generateStrongPassword = async () => {
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+
+  const passwordLength = 16;
+
+  const generatedPassword = Array.from(
+    { length: passwordLength },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join('');
+
+  setPassword(generatedPassword);
+
+  await navigator.clipboard.writeText(generatedPassword);
+
+   setPasswordCopied(true);
+
+  setTimeout(() => {
+    setPasswordCopied(false);
+  }, 3000);
+};
 
   return (
     <EditorDialog
@@ -59,30 +83,50 @@ export function TeacherForm({
         autoFocus
       />
       {!teacher && (
-        <>
-          <Input
-            label="Adresă de e-mail"
-            id="teacher-email"
-            type="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-          <label className="block text-sm font-medium">
-            Parolă temporară
-            <PasswordInput
-              required
-              minLength={8}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="new-password"
-            />
-          </label>
-          <p className="text-xs text-gray-500">
-            Cel puțin 8 caractere. Educatorul va alege o parolă nouă la prima
-            autentificare.
-          </p>
-        </>
+      <>
+  <Input
+    label="Adresă de e-mail"
+    id="teacher-email"
+    type="email"
+    required
+    value={email}
+    onChange={(event) => setEmail(event.target.value)}
+  />
+
+  <label className="block text-sm font-medium">
+    Parolă temporară
+
+    <div className="flex items-center gap-2">
+      <div className="flex-1">
+        <PasswordInput
+          required
+          minLength={8}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="new-password"
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={generateStrongPassword}
+        className="rounded-md border px-3 py-2 text-sm hover:bg-gray-50"
+      >
+        Generează
+      </button>
+    </div>
+          {passwordCopied && (
+  <p className="mt-1 text-xs text-green-600">
+    ✓ Parola copiată în clipboard
+  </p>
+)}
+  </label>
+
+  <p className="text-xs text-gray-500">
+    Cel puțin 8 caractere. Educatorul va alege o parolă nouă la prima
+    autentificare.
+  </p>
+</>
       )}
       <KindergartenSelect
         rows={kindergartens}
