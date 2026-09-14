@@ -8,6 +8,12 @@ import './index.css'
 import App from './App'
 import { installRomanianValidation } from './locale'
 
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js')
+  })
+}
+
 dayjs.locale('ro')
 installRomanianValidation()
 
