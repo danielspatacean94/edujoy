@@ -1,6 +1,6 @@
 import { Fragment, useState, useRef, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { Menu, LogOut, KeyRound, ChevronDown, Megaphone, PartyPopper } from 'lucide-react'
+import { Menu, LogOut, KeyRound, ChevronDown, Megaphone, PartyPopper, Maximize2, Minimize2 } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { authService } from '@/services/auth.service'
 import { Modal } from '@/components/ui/Modal'
@@ -215,6 +215,23 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const crumbs = useBreadcrumbs()
+  const [fullscreen, setFullscreen] = useState(false)
+
+  useEffect(() => {
+    const sync = () => setFullscreen(Boolean(document.fullscreenElement))
+    document.addEventListener('fullscreenchange', sync)
+    sync()
+    return () => document.removeEventListener('fullscreenchange', sync)
+  }, [])
+
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen()
+      else await document.documentElement.requestFullscreen()
+    } catch {
+      // Fullscreen can be unavailable or blocked by the browser; keep the page usable.
+    }
+  }
 
   return (
     <div className="shrink-0">
@@ -249,6 +266,15 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => void toggleFullscreen()}
+            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            aria-label={fullscreen ? 'Ieșire din ecran complet' : 'Activează ecran complet'}
+            title={fullscreen ? 'Ieșire din ecran complet' : 'Ecran complet'}
+          >
+            {fullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+          </button>
           <NotificationBell />
           <UserMenu />
         </div>

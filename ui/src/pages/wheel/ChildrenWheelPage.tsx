@@ -94,17 +94,27 @@ function selectedLabel(genre: ChildGenre | null): string {
   return genre === 'female' ? 'selectată' : 'selectat';
 }
 
-function announceWinner(name: string, genre: ChildGenre | null) {
+function announceWinner(name: string) {
   const winnerSound = new Audio('/winner.mp3');
   winnerSound.volume = 0.10;
   void winnerSound.play().catch(() => null);
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const speech = new SpeechSynthesisUtterance(
-    `${name} a fost ${selectedLabel(genre)}`,
+    `${name}, roata te-a ales pe tine!`,
   );
   speech.lang = 'ro-RO';
   speech.rate = 0.8;
+  speech.pitch = 1.15;
+  window.speechSynthesis.speak(speech);
+}
+
+function announceStart() {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const speech = new SpeechSynthesisUtterance('Să vedem pe cine alege roata');
+  speech.lang = 'ro-RO';
+  speech.rate = 0.85;
   speech.pitch = 1.15;
   window.speechSynthesis.speak(speech);
 }
@@ -208,6 +218,7 @@ export function ChildrenWheelPage() {
 
   function spin() {
     if (spinning || !children.length) return;
+    announceStart();
     const index = Math.floor(Math.random() * children.length);
     const slice = 360 / children.length;
     const target = 360 - (index * slice + slice / 2);
@@ -223,22 +234,22 @@ export function ChildrenWheelPage() {
         3500,
       );
       setSpinning(false);
-      announceWinner(selected.name, selected.genre);
+      announceWinner(selected.name);
     }, 4200);
   }
 
-  const radius = 'min(38vw, 250px)';
+  const radius = 'min(37vw, calc((100dvh - 11rem) / 2 - 20px), 300px)';
   return (
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4">
+    <div className="wheel-page flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="wheel-toolbar flex flex-wrap items-center justify-between gap-4 pb-4">
         <label
           htmlFor="wheel-group"
-          className="flex items-center gap-3 text-sm font-semibold text-slate-700"
+          className="wheel-group-picker flex min-w-0 items-center gap-3 text-sm font-semibold text-slate-700"
         >
           Grupa
           <select
             id="wheel-group"
-            className="rounded-xl border border-slate-300 bg-white px-4 py-2"
+            className="wheel-group-select min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
             value={groupId}
             onChange={(event) => setGroupId(event.target.value)}
             disabled={loading}
@@ -255,23 +266,19 @@ export function ChildrenWheelPage() {
           {children.length} {children.length === 1 ? 'copil' : 'copii'}
         </div>
       </div>
-      <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
-        Ai o activitate la care trebuie să participe copiii? Folosește Roata copiilor pentru a desemna aleatoriu următorul copil. Alege grupa, apasă butonul din centrul roții și lasă roata să decidă — numele copilului selectat va fi afișat și anunțat cu voce tare.
-      </p>
       {error && (
         <p role="alert" className="error-box mb-3">
           {error}
         </p>
       )}
       <section
-        className="relative flex min-h-[480px] flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-[#1e5947] p-4 shadow-xl sm:p-8"
-        style={{ height: 'calc(100dvh - 10rem)' }}
+        className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible p-1 sm:p-4"
       >
         <div
           className="relative z-0 aspect-square max-w-full shrink-0"
           style={{
-            width: 'min(82vw, 70dvh, 620px)',
-            height: 'min(82vw, 70dvh, 620px)',
+            width: 'min(92vw, calc(100dvh - 11rem), 760px)',
+            height: 'min(92vw, calc(100dvh - 11rem), 760px)',
           }}
         >
           <span
