@@ -10,6 +10,7 @@ const mainNav = [
   { label: 'Ziua mea', path: '/', Icon: LayoutDashboard },
   { label: 'Prezență', path: '/attendance', Icon: ClipboardCheck },
   { label: 'Roata copiilor', path: '/wheel', Icon: Dices },
+  // { label: 'Calendarul dimineții', path: '/morning-calendar', Icon: CalendarHeart },
   // { label: '<Domain>', path: '/<route>', Icon: SomeIcon },
 ]
 

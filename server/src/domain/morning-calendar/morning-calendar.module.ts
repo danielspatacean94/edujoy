@@ -1,0 +1,2 @@
+import { Module } from '@nestjs/common'; import { TypeOrmModule } from '@nestjs/typeorm'; import { GroupsModule } from '../groups/groups.module'; import { MorningCalendar } from './entities/morning-calendar.entity'; import { MorningCalendarController } from './morning-calendar.controller'; import { MorningCalendarService } from './morning-calendar.service';
+@Module({ imports: [TypeOrmModule.forFeature([MorningCalendar]), GroupsModule], providers: [MorningCalendarService], controllers: [MorningCalendarController] }) export class MorningCalendarModule {}

@@ -37,3 +37,9 @@ export function playCompletionSound(delay = 0) {
   if (delay > 0) window.setTimeout(play, delay)
   else play()
 }
+
+export function playAttendanceStartSound() {
+  const sound = new Audio('/attendance-start.mp3')
+  sound.volume = 1
+  void sound.play().catch(() => null)
+}

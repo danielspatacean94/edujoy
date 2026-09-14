@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CalendarDays, ClipboardCheck, Users } from 'lucide-react'
 import {
@@ -11,7 +11,11 @@ import {
 import { AttendanceCard } from './AttendanceCard'
 import { AttendanceBoard } from './AttendanceBoard'
 import { today, updateSummary } from './attendance-utils'
-import { announceAttendance, playCompletionSound } from './attendance-audio'
+import {
+  announceAttendance,
+  playAttendanceStartSound,
+  playCompletionSound,
+} from './attendance-audio'
 
 function requestAttendanceFullscreen() {
   const request = document.documentElement.requestFullscreen
@@ -28,6 +32,7 @@ export function AttendancePage() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
+  const startSoundFor = useRef<string | null>(null)
 
   async function load() {
     setLoading(true)
@@ -55,6 +60,10 @@ export function AttendancePage() {
       .then((detail) => {
         setSelected(detail)
         setDate(detail.date)
+        if (startSoundFor.current !== detail.id) {
+          startSoundFor.current = detail.id
+          playAttendanceStartSound()
+        }
       })
       .catch((cause) => setError(errorMessage(cause)))
       .finally(() => setLoading(false))

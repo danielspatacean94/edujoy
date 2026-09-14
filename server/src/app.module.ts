@@ -1,6 +1,7 @@
 import { KindergartensModule } from './domain/kindergartens/kindergartens.module';
 import { GroupsModule } from './domain/groups/groups.module';
 import { AttendanceModule } from './domain/attendance/attendance.module';
+import { MorningCalendarModule } from './domain/morning-calendar/morning-calendar.module';
 import { ChildrenModule } from './domain/children/children.module';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -48,6 +49,7 @@ import { BannersModule } from './domain/banners/banners.module';
     ChildrenModule,
     GroupsModule,
     AttendanceModule,
+    MorningCalendarModule,
     // ClientsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
