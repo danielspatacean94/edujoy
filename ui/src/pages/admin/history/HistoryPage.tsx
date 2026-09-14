@@ -30,7 +30,7 @@ const ENTITY_TYPE_LABEL: Record<string, string> = {
 
 const FIELD_LABEL: Record<string, string> = {
   _id: 'Identificator', name: 'Nume', fullName: 'Nume complet', email: 'E-mail',
-  role: 'Rol', kindergartenId: 'Grădiniță', groupId: 'Grupă', location: 'Adresă', age: 'Vârstă',
+  role: 'Rol', kindergartenId: 'Grădiniță', groupId: 'Grupă', location: 'Adresă', age: 'Vârstă', genre: 'Gen',
   passwordExpiresAt: 'Expirarea parolei', tokenVersion: 'Versiunea sesiunii',
   global: 'Setări generale', message: 'Mesaj', title: 'Titlu', link: 'Legătură',
   startDate: 'Data de început', endDate: 'Data de sfârșit', style: 'Stil',

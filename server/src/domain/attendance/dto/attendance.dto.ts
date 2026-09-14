@@ -1,3 +1,4 @@
+import type { ChildGenre } from '@shared/types/child';
 import { IsEnum, IsMongoId, IsOptional, Matches } from 'class-validator';
 import { AttendanceStatus, ChildAttendanceStatus } from '../entities/attendance.entity';
 
@@ -29,6 +30,7 @@ export class AttendanceSummaryDto {
 export class AttendanceChildDto {
   id: string;
   name: string;
+  genre: ChildGenre | null;
   age: number;
   photoKey: string | null;
   status: ChildAttendanceStatus | null;

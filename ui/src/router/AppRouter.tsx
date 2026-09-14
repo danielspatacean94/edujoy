@@ -5,13 +5,14 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { NoAccessPage } from '@/pages/auth/NoAccessPage'
 import { ForceChangePasswordPage } from '@/pages/auth/ForceChangePasswordPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
-import { DirectoryPage } from '@/pages/people/DirectoryPage'
+import { KindergartensPage } from '@/pages/kindergartens/KindergartensPage'
+import { TeachersPage } from '@/pages/teachers/TeachersPage'
+import { GroupsPage } from '@/pages/groups/GroupsPage'
+import { ChildrenPage } from '@/pages/children/ChildrenPage'
 import { HistoryPage } from '@/pages/admin/history/HistoryPage'
 import { SettingsPage } from '@/pages/admin/settings/SettingsPage'
 import { BannersPage } from '@/pages/admin/banners/BannersPage'
 import { AttendancePage } from '@/pages/attendance/AttendancePage'
-// import each new page here as it's created, e.g.:
-// import { ClientsPage } from '@/pages/clients/ClientsPage'
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute role="admin">{children}</ProtectedRoute>
@@ -23,24 +24,79 @@ export function AppRouter() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/no-access" element={<NoAccessPage />} />
-        <Route path="/change-password" element={<ProtectedRoute><ForceChangePasswordPage /></ProtectedRoute>} />
-        <Route path="/attendance/:id" element={<ProtectedRoute><AttendancePage /></ProtectedRoute>} />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ForceChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/attendance/:id"
+          element={
+            <ProtectedRoute>
+              <AttendancePage />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+        <Route
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<DashboardPage />} />
 
-          {/* one <Route> per page, mirroring the nav entries in Sidebar.tsx, e.g.: */}
-          {/* <Route path="/clients" element={<ClientsPage />} /> */}
-
-          <Route path="/admin/users" element={<Navigate to="/admin/teachers" replace />} />
-          <Route path="/admin/kindergartens" element={<AdminRoute><DirectoryPage key="kindergartens" resource="kindergartens" /></AdminRoute>} />
-          <Route path="/admin/teachers" element={<AdminRoute><DirectoryPage key="teachers" resource="teachers" /></AdminRoute>} />
-          <Route path="/groups" element={<DirectoryPage key="groups" resource="groups" />} />
-          <Route path="/children" element={<DirectoryPage key="children" resource="children" />} />
+          <Route
+            path="/admin/users"
+            element={<Navigate to="/admin/teachers" replace />}
+          />
+          <Route
+            path="/admin/kindergartens"
+            element={
+              <AdminRoute>
+                <KindergartensPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/teachers"
+            element={
+              <AdminRoute>
+                <TeachersPage />
+              </AdminRoute>
+            }
+          />
+          <Route path="/groups" element={<GroupsPage />} />
+          <Route path="/children" element={<ChildrenPage />} />
           <Route path="/attendance" element={<AttendancePage />} />
-          <Route path="/admin/history" element={<AdminRoute><HistoryPage /></AdminRoute>} />
-          <Route path="/admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
-          <Route path="/admin/banners" element={<AdminRoute><BannersPage /></AdminRoute>} />
+          <Route
+            path="/admin/history"
+            element={
+              <AdminRoute>
+                <HistoryPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <AdminRoute>
+                <SettingsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/banners"
+            element={
+              <AdminRoute>
+                <BannersPage />
+              </AdminRoute>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

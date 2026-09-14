@@ -88,7 +88,11 @@ Add a row here for every new domain module (e.g. `clients`, `projects`) as it's 
 ```
 ui/src/services/          -> All API communication (Axios). Nothing else makes API calls.
 ui/src/pages/              -> Route-level components + co-located Zustand store per page group
-ui/src/pages/admin/        -> Admin-only pages: users, history (audit log), settings, banners
+ui/src/pages/admin/        -> Admin-only pages: history (audit log), settings, banners
+ui/src/pages/kindergartens/ -> Admin kindergarten page and form
+ui/src/pages/teachers/      -> Admin teacher page, form, and password reset dialog
+ui/src/pages/groups/        -> Group page, form, and page store
+ui/src/pages/children/      -> Child page, form, photos, and page store
 ui/src/components/layout/  -> AppLayout, Sidebar, Header (the fixed shell every page renders inside)
 ui/src/components/ui/      -> Shared presentational kit: Badge, Button, Input, PasswordInput, Modal,
                               MultiSelect, SearchableSelect, Spinner, Table, MobileTable
@@ -102,7 +106,7 @@ Stack: React 18 · Vite 5 · Ant Design 5 · React Router 6 · Zustand 5 · Tail
 
 ### UI component kit (`ui/src/components/ui/`)
 
-A small set of Tailwind-styled primitives used instead of reaching for Ant Design's `Table`/`Modal`/`Form` on every page — `Table`/`MobileTable` (paginated list + search, rendered as a real `<table>` on desktop and a card list under `md:`), `Modal` (simple centered dialog), `Button`/`Input`/`PasswordInput`, `Badge`, `Spinner`, and `MultiSelect`/`SearchableSelect` for combobox-style pickers. `HistoryPage` and `SettingsPage` use this kit; EduJoy’s `DirectoryPage` uses responsive cards plus the shared Button/Input/Modal primitives — follow the same pattern for new list/CRUD pages rather than mixing in raw Ant Design table/modal components. Ant Design itself is still available for genuinely complex stateful widgets (date pickers, cascaders) where a bespoke component isn't worth building.
+A small set of Tailwind-styled primitives used instead of reaching for Ant Design's `Table`/`Modal`/`Form` on every page — `Table`/`MobileTable` (paginated list + search, rendered as a real `<table>` on desktop and a card list under `md:`), `Modal` (simple centered dialog), `Button`/`Input`/`PasswordInput`, `Badge`, `Spinner`, and `MultiSelect`/`SearchableSelect` for combobox-style pickers. `HistoryPage` and `SettingsPage` use this kit; EduJoy’s dedicated community pages use responsive cards and `components/directory/` presentation components plus the shared Button/Input/Modal primitives — follow the same pattern for new list/CRUD pages rather than mixing in raw Ant Design table/modal components. Ant Design itself is still available for genuinely complex stateful widgets (date pickers, cascaders) where a bespoke component isn't worth building.
 
 ### Routing
 
@@ -256,7 +260,9 @@ Always throw NestJS HTTP exceptions: `NotFoundException`, `BadRequestException`,
 
 ## EduJoy implementation notes
 
-- The shared `DirectoryPage` (`ui/src/pages/people/`) implements kindergarten, teacher, and child CRUD with a separate Zustand store instance per mounted page, server search/pagination, mutation errors, and password reset dialogs. All requests live in `edujoy.service.ts`.
+- `KindergartensPage`, `TeachersPage`, `GroupsPage`, and `ChildrenPage` own their domain cards and forms. Do not reintroduce a resource-switching page, form, or optional-field record type. Each domain has a typed service and a co-located store factory; `createCollectionStore` and `useCollection` share pagination, search, dialog state, and stale-request handling. `components/directory/` shares presentation only. Teacher password reset and child photo upload remain domain-specific.
+- Attendance presentation is split into `AttendanceBoard`, `AttendanceCard`, `AttendanceChildCard`, and `AttendanceChildPhoto`; audio lives in `attendance-audio.ts`. `useChildPhoto` owns photo loading and object-URL cleanup.
+- Run `npm run test:ui -- --runInBand` for UI store, service contract, and form regression tests (Jest + ts-jest; no extra dependencies).
 - New resource PUT bodies contain the full editable record; teacher updates are partial. Child age is in whole years, 0–18.
 - Kindergarten deletes are blocked when active teachers or children remain; all deletes are soft deletes. Child operations fail closed for unassigned teachers. Deleted users cannot authenticate existing sessions.
 - Tests cover tenant isolation, forged assignments, deletion dependencies, teacher assignments, and deleted-user session lookup. Run `npm test -- --runInBand`, `npm run build`, and `node node_modules/typescript/bin/tsc --project ui/tsconfig.json`.
@@ -266,3 +272,5 @@ Always throw NestJS HTTP exceptions: `NotFoundException`, `BadRequestException`,
 
 EduJoy is Romanian-only. Write all user-facing labels, helper text, validation and error messages in Romanian with diacritics. Use ro-RO date/number formatting and Romanian Ant Design/Day.js locales. Keep code identifiers, API paths and stored enum values unchanged.
 
+
+- Child `genre` is required on create/update: `male` (Băiețel) or `female` (Fetiță), shared in `shared/types/child.ts`. Older records return null until edited; do not infer genre. Attendance responses include genre and speech uses prezent/prezentă accordingly.

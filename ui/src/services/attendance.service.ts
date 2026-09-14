@@ -1,5 +1,6 @@
+import type { ChildGenre } from '@shared/types/child'
 import { apiClient } from './api'
-import { errorMessage } from './edujoy.service'
+import { errorMessage } from './api-error'
 
 export type AttendanceStatus = 'PENDING' | 'IN_PROGRESS' | 'FINISHED'
 export type ChildAttendanceStatus = 'PRESENT' | 'ABSENT'
@@ -17,6 +18,7 @@ export interface AttendanceSummary {
 export interface AttendanceChild {
   id: string
   name: string
+  genre: ChildGenre | null
   age: number
   photoKey: string | null
   status: ChildAttendanceStatus | null
@@ -30,27 +32,46 @@ export interface AttendanceDetail extends AttendanceSummary {
 
 export const attendanceService = {
   async list(date: string) {
-    const { data } = await apiClient.get<{ date: string; data: AttendanceSummary[] }>('/attendances', { params: { date } })
+    const { data } = await apiClient.get<{
+      date: string
+      data: AttendanceSummary[]
+    }>('/attendances', { params: { date } })
     return data
   },
   async create(groupId: string, date: string) {
-    const { data } = await apiClient.post<AttendanceDetail>('/attendances', { groupId, date })
+    const { data } = await apiClient.post<AttendanceDetail>('/attendances', {
+      groupId,
+      date,
+    })
     return data
   },
   async start(id: string) {
-    const { data } = await apiClient.post<AttendanceDetail>(`/attendances/${id}/start`)
+    const { data } = await apiClient.post<AttendanceDetail>(
+      `/attendances/${id}/start`,
+    )
     return data
   },
-  async setChildStatus(id: string, childId: string, status: ChildAttendanceStatus) {
-    const { data } = await apiClient.post<AttendanceDetail>(`/attendances/${id}/children/${childId}/status`, { status })
+  async setChildStatus(
+    id: string,
+    childId: string,
+    status: ChildAttendanceStatus,
+  ) {
+    const { data } = await apiClient.post<AttendanceDetail>(
+      `/attendances/${id}/children/${childId}/status`,
+      { status },
+    )
     return data
   },
   async finish(id: string) {
-    const { data } = await apiClient.post<AttendanceDetail>(`/attendances/${id}/finish`)
+    const { data } = await apiClient.post<AttendanceDetail>(
+      `/attendances/${id}/finish`,
+    )
     return data
   },
   async reset(id: string) {
-    const { data } = await apiClient.post<AttendanceDetail>(`/attendances/${id}/reset`)
+    const { data } = await apiClient.post<AttendanceDetail>(
+      `/attendances/${id}/reset`,
+    )
     return data
   },
   async remove(id: string) {

@@ -20,6 +20,7 @@ export class Attendance {
   @Column() date: string;
   @Column() status: AttendanceStatus = AttendanceStatus.PENDING;
   @Column() checkedChildIds: string[] = [];
+  @Column() childOrder: string[] = [];
   @Column() childStatuses: Record<string, ChildAttendanceStatus> = {};
   @Column({ nullable: true, default: null }) startedAt: Date | null = null;
   @Column({ nullable: true, default: null }) finishedAt: Date | null = null;

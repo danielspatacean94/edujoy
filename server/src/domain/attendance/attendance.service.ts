@@ -60,13 +60,14 @@ export class AttendanceService {
     const record = await this.findRecord(id, user);
     if (record.status === AttendanceStatus.FINISHED) throw new ConflictException('Această prezență este deja finalizată.');
     if (record.status === AttendanceStatus.PENDING) {
+      const children = await this.activeChildren(record.groupId);
+      record.childOrder = children.map(child => child._id.toString());
+      for (let i = record.childOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [record.childOrder[i], record.childOrder[j]] = [record.childOrder[j], record.childOrder[i]];
+      }
       record.status = AttendanceStatus.IN_PROGRESS;
       record.startedAt = new Date();
-      const children = await this.activeChildren(record.groupId);
-      if (!children.length) {
-        record.status = AttendanceStatus.FINISHED;
-        record.finishedAt = new Date();
-      }
       await this.repo.save(record);
     }
     return this.findOne(id, user);
@@ -81,7 +82,7 @@ export class AttendanceService {
     record.childStatuses = { ...(record.childStatuses ?? {}), [childId]: status };
     record.checkedChildIds = Object.entries(record.childStatuses).filter(([, value]) => value === ChildAttendanceStatus.PRESENT).map(([id]) => id);
     const children = await this.activeChildren(record.groupId);
-    if (children.length && children.every(item => record.childStatuses[item._id.toString()])) {
+    if (children.length > 0 && children.every(child => record.childStatuses[child._id.toString()] === ChildAttendanceStatus.PRESENT)) {
       record.status = AttendanceStatus.FINISHED;
       record.finishedAt = new Date();
     }
@@ -93,6 +94,16 @@ export class AttendanceService {
     const record = await this.findRecord(id, user);
     if (record.status === AttendanceStatus.PENDING) throw new BadRequestException('Pornește prezența înainte de a o finaliza.');
     if (record.status === AttendanceStatus.IN_PROGRESS) {
+      const children = await this.activeChildren(record.groupId);
+      record.childStatuses = { ...(record.childStatuses ?? {}) };
+      for (const child of children) {
+        const childId = child._id.toString();
+        record.childStatuses[childId] ??= record.checkedChildIds.includes(childId)
+          ? ChildAttendanceStatus.PRESENT
+          : ChildAttendanceStatus.ABSENT;
+      }
+      record.checkedChildIds = Object.entries(record.childStatuses)
+        .filter(([, value]) => value === ChildAttendanceStatus.PRESENT).map(([childId]) => childId);
       record.status = AttendanceStatus.FINISHED;
       record.finishedAt = new Date();
       await this.repo.save(record);
@@ -105,6 +116,7 @@ export class AttendanceService {
     this.requireToday(record.date);
     record.status = AttendanceStatus.PENDING;
     record.checkedChildIds = [];
+    record.childOrder = [];
     record.childStatuses = {};
     record.startedAt = null;
     record.finishedAt = null;
@@ -150,11 +162,14 @@ export class AttendanceService {
 
   private toDetail(group: Group, record: Attendance, children: Child[]): AttendanceDetailDto {
     const childStatuses = record.childStatuses ?? {};
+    const positions = new Map((record.childOrder ?? []).map((id, index) => [id, index]));
+    children = [...children].sort((a, b) =>
+      (positions.get(a._id.toString()) ?? positions.size) - (positions.get(b._id.toString()) ?? positions.size));
     return {
       ...this.toSummary(group, record.date, record, children.length),
       startedAt: record.startedAt,
       finishedAt: record.finishedAt,
-      children: children.map(child => ({ id: child._id.toString(), name: child.name, age: child.age, photoKey: child.photoKey ?? null, status: childStatuses[child._id.toString()] ?? (record.checkedChildIds.includes(child._id.toString()) ? ChildAttendanceStatus.PRESENT : null) })),
+      children: children.map(child => ({ id: child._id.toString(), name: child.name, age: child.age, genre: child.genre ?? null, photoKey: child.photoKey ?? null, status: childStatuses[child._id.toString()] ?? (record.checkedChildIds.includes(child._id.toString()) ? ChildAttendanceStatus.PRESENT : null) })),
     };
   }
 }

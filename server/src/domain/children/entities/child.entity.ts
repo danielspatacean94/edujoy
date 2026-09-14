@@ -1,3 +1,4 @@
+import { ChildGenre } from '@shared/types/child';
 import { Entity, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ObjectId } from 'mongodb';
 @Entity('child')
@@ -7,6 +8,7 @@ export class Child {
   name: string;
   @Column()
   age: number;
+  @Column({ nullable: true, default: null }) genre: ChildGenre | null = null;
   @Column()
   kindergartenId: string;
   @Column({ nullable: true, default: null }) groupId: string | null = null;

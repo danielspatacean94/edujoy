@@ -45,7 +45,7 @@ export class ChildrenService {
   async create(dto: SaveChildDto, user: AuthenticatedUser) {
     const kindergartenId = await this.destination(dto, user);
     await this.validateGroup(dto.groupId, kindergartenId, user);
-    return this.toDto(await this.repo.save(this.repo.create({ name: dto.name, age: dto.age, kindergartenId, groupId: dto.groupId })));
+    return this.toDto(await this.repo.save(this.repo.create({ name: dto.name, age: dto.age, genre: dto.genre, kindergartenId, groupId: dto.groupId })));
   }
   async validateGroup(id: string, kindergartenId: string, user: AuthenticatedUser) {
     if (!id) throw new BadRequestException('Alege o grupă.');
@@ -58,7 +58,7 @@ export class ChildrenService {
     await this.validateGroup(dto.groupId, kindergartenId, user);
     row.kindergartenId = kindergartenId;
     row.groupId = dto.groupId;
-    row.name = dto.name; row.age = dto.age;
+    row.name = dto.name; row.age = dto.age; row.genre = dto.genre;
     return this.toDto(await this.repo.save(row));
   }
   async remove(id: string, user: AuthenticatedUser) {
@@ -80,6 +80,6 @@ export class ChildrenService {
     return { buffer: await this.s3.getObject(row.photoKey), mimetype: row.photoMimeType ?? 'image/jpeg' };
   }
   toDto(row: Child): ChildResponseDto {
-    return { id: row._id.toString(), name: row.name, age: row.age, kindergartenId: row.kindergartenId, groupId: row.groupId ?? null, photoKey: row.photoKey ?? null, createdAt: row.createdAt, updatedAt: row.updatedAt };
+    return { id: row._id.toString(), name: row.name, age: row.age, genre: row.genre ?? null, kindergartenId: row.kindergartenId, groupId: row.groupId ?? null, photoKey: row.photoKey ?? null, createdAt: row.createdAt, updatedAt: row.updatedAt };
   }
 }

@@ -15,6 +15,7 @@
     "build:ui": "vite build --config ui/vite.config.ts",
     "start": "node dist/server/src/main.js",
     "test": "jest",
+    "test:ui": "jest --config ui/jest.config.cjs",
     "test:e2e": "jest --config server/test/jest-e2e.json",
     "lint": "eslint \"{server,ui,shared}/src/**/*.ts\"",
     "format": "prettier --write \"{server,ui,shared}/src/**/*.ts\""
